@@ -1,6 +1,6 @@
 # sjuapp
-**Dependencies**
-FastAPI (for testing)
+**Dependencies:**
+ FastAPI (for testing)
 Uvicorn (for testing)
 
 # Importing
