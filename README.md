@@ -1,5 +1,5 @@
 # sjuapp
 
 for importing, we import:
-pip install fastapi
-pip install uvicorn
+pip install fastapi,
+and pip install uvicorn
