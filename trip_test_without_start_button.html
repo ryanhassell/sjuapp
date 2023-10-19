@@ -7,16 +7,17 @@
   <body>
     <div id="map" style="height: 400px; width: 100%;"></div>
     <div id="eta" style="margin-top: 10px;"></div>
-    <button id="startTrip">Start Trip</button>
     <script>
       var map, directionsService, directionsDisplay;
       var trip = {
-        status: "not_started",
+        origin: { lat: 39.987960, lng: -75.248980 },
+        destination: { lat: 39.993600, lng: -75.239560 },
+        status: "in_progress",
       };
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
-          center: { lat: 39.993330, lng: -75.243300 },
+          center: trip.origin,
           zoom: 10,
         });
 
@@ -26,18 +27,8 @@
         // Create a DirectionsRenderer to display the route on the map
         directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
 
-        // Set up the event listener for the "Start Trip" button
-        document.getElementById("startTrip").addEventListener("click", startTrip);
-      }
-
-      function startTrip() {
-        if (trip.status === "not_started") {
-          trip.origin = { lat: 39.987960, lng: -75.248980 };
-          trip.destination = { lat: 39.993600, lng: -75.239560 };
-          trip.status = "in_progress";
-          getETA();
-          document.getElementById("startTrip").disabled = true;
-        }
+        // Display the route immediately when the page loads
+        getETA();
       }
 
       function getETA() {
@@ -62,4 +53,3 @@
     </script>
   </body>
 </html>
-
