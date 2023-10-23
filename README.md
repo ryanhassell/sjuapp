@@ -3,6 +3,11 @@
  FastAPI (for testing)
 Uvicorn (for testing)
 
+# Database Configuration
+Download PostgreSQL and PGAdmin (recommended) or any SQL DB editor of your choice.
+Create server and DB 'sjuapp'
+Replace the global variables in global_variables.py with their respective values.
+
 # Importing
 for importing, we import:
 pip install fastapi,
