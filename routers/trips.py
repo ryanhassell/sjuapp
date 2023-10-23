@@ -19,6 +19,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 router = APIRouter()
 
+
 # Dependency to get a database session
 def get_db():
     db = SessionLocal()
@@ -26,11 +27,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-@router.get("/")
-async def root():
-    return {"message": "Hello World"}
 
 
 @router.get("/trips", response_model=list[TripResponse])
@@ -87,5 +83,3 @@ async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends
         return trip_to_update
     else:
         raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
-
-
