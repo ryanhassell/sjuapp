@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
+from app.models import Trip
 from schemas.trip import TripResponse
 import psycopg2
 import urllib.parse
@@ -27,7 +28,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/trips", response_model=Trip)
+@app.get("/trips", response_model=None)
 async def list_trips(session: Session):
     async with session as _session:
         trips = select(Trip)
@@ -36,7 +37,7 @@ async def list_trips(session: Session):
         return list_of_trips
 
 
-@app.get("/trip", response_model=Trip)
+@app.get("/trip", response_model=None)
 async def get_trip(trip_id: int, session: Session):
     async with session as _session:
         trips = select(Trip).where(Trip.id == trip_id)
