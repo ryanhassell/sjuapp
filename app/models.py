@@ -1,8 +1,5 @@
-from typing import List
-
 from sqlalchemy import Column, Integer, String, ARRAY, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped
 
 Base = declarative_base()
 

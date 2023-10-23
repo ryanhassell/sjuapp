@@ -1,4 +1,8 @@
-from sqlalchemy import create_engine
+from fastapi import FastAPI
+from routers import users, trips  # Import your routers
 
-engine = create_engine('postgresql+psycopg2://user:password\
-@hostname/sjuapp')
+app = FastAPI()
+
+# Include your routers in the FastAPI app
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(trips.router, prefix="/trips", tags=["Trips"])

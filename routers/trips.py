@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
@@ -17,8 +17,7 @@ engine = create_engine(conn_string)
 # Create a session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-app = FastAPI()
-
+router = APIRouter()
 
 # Dependency to get a database session
 def get_db():
@@ -29,19 +28,19 @@ def get_db():
         db.close()
 
 
-@app.get("/")
+@router.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/trips", response_model=list[TripResponse])
+@router.get("/trips", response_model=list[TripResponse])
 async def list_trips(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch trips
     trips = db.query(Trip).offset(skip).limit(limit).all()
     return trips
 
 
-@app.get("/trip/{trip_id}", response_model=TripResponse)
+@router.get("/trip/{trip_id}", response_model=TripResponse)
 async def get_trip(trip_id: int, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch a single trip by ID
     trip = db.query(Trip).filter(Trip.id == trip_id).first()
@@ -50,7 +49,7 @@ async def get_trip(trip_id: int, db: Session = Depends(get_db)):
     return trip
 
 
-@app.post("/trips", response_model=TripResponse)
+@router.post("/trips", response_model=TripResponse)
 async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
     # Create a new trip in the database
     new_trip = Trip(**trip.dict())
@@ -60,7 +59,7 @@ async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
     return new_trip
 
 
-@app.delete("/trips/{trip_id}", response_model=str)
+@router.delete("/trips/{trip_id}", response_model=str)
 async def delete_trip(trip_id: int, db: Session = Depends(get_db)):
     # Retrieve the Trip object by its ID
     trip_to_delete = db.query(Trip).filter(Trip.id == trip_id).first()
@@ -74,7 +73,7 @@ async def delete_trip(trip_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
 
 
-@app.put("/trips/{trip_id}", response_model=TripResponse)
+@router.put("/trips/{trip_id}", response_model=TripResponse)
 async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends(get_db)):
     # Retrieve the Trip object by its ID
     trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
