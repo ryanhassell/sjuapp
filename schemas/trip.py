@@ -6,3 +6,10 @@ class TripResponse(BaseModel):
     start_location: str
     end_location: str
     driver: str
+
+
+class TripCreate(BaseModel):
+    start_location: str
+    end_location: str
+    driver: str
+
