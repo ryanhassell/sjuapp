@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Trip, Base
-from schemas.trip import TripResponse, TripCreate
+from schemas.trip import TripResponse, TripCreate, TripUpdate
 
 # Define your connection string
 conn_string = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
@@ -58,3 +58,34 @@ async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_trip)
     return new_trip
+
+
+@app.delete("/trips/{trip_id}", response_model=str)
+async def delete_trip(trip_id: int, db: Session = Depends(get_db)):
+    # Retrieve the Trip object by its ID
+    trip_to_delete = db.query(Trip).filter(Trip.id == trip_id).first()
+
+    if trip_to_delete:
+        # Delete the Trip object
+        db.delete(trip_to_delete)
+        db.commit()
+        return f"Trip {trip_id} successfully deleted."
+    else:
+        raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
+
+
+@app.put("/trips/{trip_id}", response_model=TripResponse)
+async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends(get_db)):
+    # Retrieve the Trip object by its ID
+    trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
+
+    if trip_to_update:
+        # Update the Trip object with the new data
+        for field, value in trip_data.dict().items():
+            setattr(trip_to_update, field, value)
+
+        db.commit()
+        db.refresh(trip_to_update)
+        return trip_to_update
+    else:
+        raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
