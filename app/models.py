@@ -24,3 +24,4 @@ class User(Base):
     last_name = Column(String)
     date_registered = Column(DateTime)
     email_address = Column(String)
+    phone_number = Column(Integer)

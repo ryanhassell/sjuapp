@@ -87,3 +87,5 @@ async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends
         return trip_to_update
     else:
         raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
+
+

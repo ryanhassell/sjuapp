@@ -9,6 +9,7 @@ class UserResponse(BaseModel):
     last_name: str
     date_registered: datetime
     email_address: str
+    phone_number: int
 
 
 class UserCreate(BaseModel):
@@ -16,6 +17,7 @@ class UserCreate(BaseModel):
     last_name: str
     date_registered: datetime
     email_address: str
+    phone_number: int
 
 
 class UserUpdate(BaseModel):
@@ -23,3 +25,5 @@ class UserUpdate(BaseModel):
     last_name: str
     date_registered: datetime
     email_address: str
+    phone_number: int
+    
