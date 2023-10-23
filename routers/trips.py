@@ -63,7 +63,6 @@ async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
 async def delete_trip(trip_id: int, db: Session = Depends(get_db)):
     # Retrieve the Trip object by its ID
     trip_to_delete = db.query(Trip).filter(Trip.id == trip_id).first()
-
     if trip_to_delete:
         # Delete the Trip object
         db.delete(trip_to_delete)
