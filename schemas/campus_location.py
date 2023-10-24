@@ -21,7 +21,6 @@ class CampusLocationResponse(BaseModel):
 
 
 class CampusLocationCreate(BaseModel):
-    id: int
     name: str
     longitude: float
     latitude: float
@@ -29,7 +28,6 @@ class CampusLocationCreate(BaseModel):
 
 
 class CampusLocationUpdate(BaseModel):
-    id: int
     name: str
     longitude: float
     latitude: float
