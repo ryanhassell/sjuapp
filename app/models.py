@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ARRAY, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ARRAY, DateTime, Enum, Float
 from sqlalchemy.ext.declarative import declarative_base
 
 from schemas.trip import TripTypeEnum
@@ -25,3 +25,12 @@ class User(Base):
     date_registered = Column(DateTime)
     email_address = Column(String)
     phone_number = Column(Integer)
+
+
+class CampusLocation(Base):
+    __tablename__ = "campus_locations"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    campus = Column(ARRAY(String))

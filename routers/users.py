@@ -29,14 +29,14 @@ def get_db():
         db.close()
 
 
-@router.get("/users", response_model=list[UserResponse])
+@router.get("", response_model=list[UserResponse])
 async def list_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch users
     users = db.query(User).offset(skip).limit(limit).all()
     return users
 
 
-@router.get("/users/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse)
 async def get_user(user_id: int, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch a single user by ID
     user = db.query(User).filter(User.id == user_id).first()
@@ -45,7 +45,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-@router.post("/users", response_model=UserResponse)
+@router.post("", response_model=UserResponse)
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     # Create a new user in the database
     new_user = User(**user.dict())
@@ -55,7 +55,7 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.delete("/users/{user_id}", response_model=str)
+@router.delete("/{user_id}", response_model=str)
 async def delete_user(user_id: int, db: Session = Depends(get_db)):
     # Retrieve the User object by its ID
     user_to_delete = db.query(User).filter(User.id == user_id).first()
@@ -69,7 +69,7 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
 
 
-@router.put("/users/{user_id}", response_model=UserResponse)
+@router.put("/{user_id}", response_model=UserResponse)
 async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
     # Retrieve the User object by its ID
     user_to_update = db.query(User).filter(User.id == user_id).first()
