@@ -17,8 +17,8 @@ class Trip(Base):
     passengers = Column(ARRAY(Integer))
 
 
-class User(Base):
-    __tablename__ = "users"
+class Rider(Base):
+    __tablename__ = "riders"
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
@@ -33,4 +33,4 @@ class CampusLocation(Base):
     name = Column(String)
     latitude = Column(Float)
     longitude = Column(Float)
-    # campus = Column(ARRAY(String))
+    campus = Column(String)

@@ -14,7 +14,7 @@ class CampusLocationResponse(BaseModel):
     name: str
     longitude: float
     latitude: float
-    # campus: CampusEnum
+    campus: CampusEnum
 
     class Config:
         arbitrary_types_allowed = True
@@ -24,11 +24,11 @@ class CampusLocationCreate(BaseModel):
     name: str
     longitude: float
     latitude: float
-    # campus: CampusEnum
+    campus: CampusEnum
 
 
 class CampusLocationUpdate(BaseModel):
     name: str
     longitude: float
     latitude: float
-    # campus: CampusEnum
+    campus: CampusEnum
