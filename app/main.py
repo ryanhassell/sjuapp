@@ -7,4 +7,4 @@ app = FastAPI()
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(trips.router, prefix="/trips", tags=["Trips"])
 app.include_router(campus_locations.router, prefix="/campus_locations", tags=["Campus Locations"])
-
+app.include_router(vehicles.router, prefix="/vehicles", tags=["Vehicles"])
