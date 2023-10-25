@@ -33,4 +33,4 @@ class CampusLocation(Base):
     name = Column(String)
     latitude = Column(Float)
     longitude = Column(Float)
-    campus = Column(ARRAY(String))
+    # campus = Column(ARRAY(String))
