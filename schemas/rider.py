@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class UserResponse(BaseModel):
+class RiderResponse(BaseModel):
     id: int
     first_name: str
     last_name: str
@@ -12,7 +12,7 @@ class UserResponse(BaseModel):
     phone_number: int
 
 
-class UserCreate(BaseModel):
+class RiderCreate(BaseModel):
     first_name: str
     last_name: str
     date_registered: datetime
@@ -20,7 +20,7 @@ class UserCreate(BaseModel):
     phone_number: int
 
 
-class UserUpdate(BaseModel):
+class RiderUpdate(BaseModel):
     first_name: str
     last_name: str
     date_registered: datetime
