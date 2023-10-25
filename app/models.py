@@ -34,3 +34,12 @@ class CampusLocation(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     # campus = Column(ARRAY(String))
+
+class Driver(Base):
+    __tablename__ = "drivers"
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    public_safety_office = Column(String)
+    phone_number = Column(Integer)
+
