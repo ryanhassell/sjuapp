@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import riders, trips, campus_locations
+from routers import riders, trips, campus_locations, vehicles, drivers
 
 app = FastAPI()
 
