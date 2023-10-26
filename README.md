@@ -11,7 +11,9 @@ Replace the global variables in global_variables.py with their respective values
 # Importing
 for importing, we import:
 pip install fastapi,
-and pip install uvicorn
+pip install uvicorn,
+pip install postgres,
+and pip install sqlalchemy
 
 # Clarity
 We will use _pylint_
