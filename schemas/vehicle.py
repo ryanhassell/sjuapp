@@ -13,6 +13,7 @@ class VehicleResponse(BaseModel):
     seatsAvailable: int
     licensePlate: int
 
+
 class VehicleCreate(BaseModel):
     make: str
     model: str
@@ -20,6 +21,7 @@ class VehicleCreate(BaseModel):
     color: str
     seatsAvailable: int
     licensePlate: int
+
 
 class VehicleUpdate(BaseModel):
     make: str

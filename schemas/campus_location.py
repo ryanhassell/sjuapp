@@ -5,8 +5,8 @@ from enum import Enum
 
 
 class CampusEnum(str, Enum):
-    hawkhill = 'HawkHill'
-    ucity = 'UniversityCity'
+    hawkhill = "Hawk Hill"
+    ucity = "University City"
 
 
 class CampusLocationResponse(BaseModel):

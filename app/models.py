@@ -34,7 +34,7 @@ class CampusLocation(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     campus = Column(String)
-    campus = Column(ARRAY(String))
+    campus = Column(String)
 
 class Vehicle(Base):
     __tablename__ = "vehicles"
