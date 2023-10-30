@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps API Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key={KEY_HERE}"></script>
+  </head>
+  <body>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+<script>
+  function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: 40.7128, lng: -74.0060 }, // Set the initial map center
+      zoom: 10, // Set the initial zoom level
+    });
+
+    // Add a marker to the map
+    var marker = new google.maps.Marker({
+      position: { lat: 40.7128, lng: -74.0060 }, // Set the marker's position
+      map: map,
+      title: 'Marker Title', // Optional title
+    });
+  }
+  // Initialize the map
+  initMap();
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps API Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key={KEY_HERE}"></script>
+  </head>
+  <body>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+    <div id="eta" style="margin-top: 10px;"></div>
+    <script>
+      var map, directionsService, directionsDisplay;
+      var trip = {
+        origin: { lat: 39.987960, lng: -75.248980 },
+        destination: { lat: 39.993600, lng: -75.239560 },
+        status: "in_progress",
+      };
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: trip.origin,
+          zoom: 10,
+        });
+
+        // Create a DirectionsService
+        directionsService = new google.maps.DirectionsService();
+
+        // Create a DirectionsRenderer to display the route on the map
+        directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
+
+        // Display the route immediately when the page loads
+        getETA();
+      }
+
+      function getETA() {
+        var request = {
+          origin: trip.origin,
+          destination: trip.destination,
+          travelMode: "DRIVING",
+        };
+
+        directionsService.route(request, function (result, status) {
+          if (status == "OK") {
+            directionsDisplay.setDirections(result);
+            var route = result.routes[0];
+            var leg = route.legs[0];
+            var eta = leg.duration.text;
+            document.getElementById("eta").innerHTML = "ETA: " + eta;
+          }
+        });
+      }
+
+      initMap();
+    </script>
+  </body>
+</html>
