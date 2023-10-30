@@ -1,23 +1,16 @@
 # sjuapp
-**Dependencies:**
- FastAPI (for testing)
-Uvicorn (for testing)
 
-# Database Configuration
-Download PostgreSQL and PGAdmin (recommended) or any SQL DB editor of your choice.
-Create server and DB 'sjuapp'
-Replace the global variables in global_variables.py with their respective values.
+sjuapp
 
-# Importing
-for importing, we import:
-pip install fastapi,
-and pip install uvicorn
+## Getting Started
 
-# Clarity
-We will use _pylint_
-# Unit Testing
-We will use _pytest_ for this, and construct unit tests for each API.
+This project is a starting point for a Flutter application.
 
-# Front End
-Will be created with _Flutter_, since it is a very easy to use for front end, and it is created by Google, whose APIs we are using for our location services.
-Flutter can also export for different operating systems, allowing us to easily become cross-platform.
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
