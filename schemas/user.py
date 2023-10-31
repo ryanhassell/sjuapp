@@ -1,9 +1,10 @@
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel
 
 
-class RiderResponse(BaseModel):
+class UserResponse(BaseModel):
     id: int
     first_name: str
     last_name: str
@@ -12,7 +13,7 @@ class RiderResponse(BaseModel):
     phone_number: int
 
 
-class RiderCreate(BaseModel):
+class UserCreate(BaseModel):
     first_name: str
     last_name: str
     date_registered: datetime
@@ -20,10 +21,9 @@ class RiderCreate(BaseModel):
     phone_number: int
 
 
-class RiderUpdate(BaseModel):
+class UserUpdate(BaseModel):
     first_name: str
     last_name: str
     date_registered: datetime
     email_address: str
     phone_number: int
-    

@@ -17,8 +17,8 @@ class Trip(Base):
     passengers = Column(ARRAY(Integer))
 
 
-class Rider(Base):
-    __tablename__ = "riders"
+class User(Base):
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
@@ -36,6 +36,7 @@ class CampusLocation(Base):
     campus = Column(String)
     campus = Column(String)
 
+
 class Vehicle(Base):
     __tablename__ = "vehicles"
     id = Column(Integer, primary_key=True, index=True)
@@ -45,11 +46,3 @@ class Vehicle(Base):
     color = Column(String)
     seatsAvailable = Column(Integer)
     licensePlate = Column(String)
-    
-class Driver(Base):
-    __tablename__ = "drivers"
-    id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String)
-    last_name = Column(String)
-    public_safety_office = Column(String)
-    phone_number = Column(Integer)

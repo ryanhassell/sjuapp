@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException, Depends, APIRouter
+from fastapi import HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Trip, Base
 from schemas.trip import TripResponse, TripCreate, TripUpdate
@@ -36,7 +37,14 @@ async def list_trips(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
     return trips
 
 
-@router.get("/{trip_id}", response_model=TripResponse)
+@router.get("/by-passenger/{passenger_id}", response_model=list[TripResponse])
+async def list_trips_by_passenger_id(passenger_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    # Use SQLAlchemy query to fetch trips with a certain passenger
+    trips = db.query(Trip).filter(Trip.passengers.any(passenger_id)).offset(skip).limit(limit).all()
+    return trips
+
+
+@router.get("/trip_id}", response_model=TripResponse)
 async def get_trip(trip_id: int, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch a single trip by ID
     trip = db.query(Trip).filter(Trip.id == trip_id).first()
