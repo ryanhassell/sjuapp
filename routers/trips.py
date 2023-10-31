@@ -37,10 +37,10 @@ async def list_trips(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
     return trips
 
 
-@router.get("/by-passenger/{passenger_id}", response_model=list[TripResponse])
-async def list_trips_by_passenger_id(passenger_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+@router.get("/by-user/{user_id}", response_model=list[TripResponse])
+async def list_trips_by_passenger_id(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.passengers.any(passenger_id)).offset(skip).limit(limit).all()
+    trips = db.query(Trip).filter(Trip.passengers.any(user_id)).offset(skip).limit(limit).all()
     return trips
 
 

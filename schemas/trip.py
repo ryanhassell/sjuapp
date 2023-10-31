@@ -11,8 +11,10 @@ class TripTypeEnum(str, Enum):
 
 class TripResponse(BaseModel):
     id: int
-    start_location: str
-    end_location: str
+    start_location_latitude: float
+    start_location_longitude: float
+    end_location_latitude: float
+    end_location_longitude: float
     driver: str
     passengers: List[int]
     trip_type: TripTypeEnum
@@ -23,8 +25,10 @@ class TripResponse(BaseModel):
 
 
 class TripCreate(BaseModel):
-    start_location: str
-    end_location: str
+    start_location_latitude: float
+    start_location_longitude: float
+    end_location_latitude: float
+    end_location_longitude: float
     driver: str
     passengers: List[int]
     trip_type: TripTypeEnum
@@ -32,8 +36,10 @@ class TripCreate(BaseModel):
 
 
 class TripUpdate(BaseModel):
-    start_location: str
-    end_location: str
+    start_location_latitude: float
+    start_location_longitude: float
+    end_location_latitude: float
+    end_location_longitude: float
     driver: str
     passengers: List[int]
     trip_type: TripTypeEnum

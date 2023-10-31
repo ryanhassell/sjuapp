@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ARRAY, DateTime, Enum, Float
+from sqlalchemy import Column, Integer, String, ARRAY, DateTime, Enum, Float, Double
 from sqlalchemy.ext.declarative import declarative_base
 
 from schemas.trip import TripTypeEnum
@@ -11,8 +11,10 @@ class Trip(Base):
     id = Column(Integer, primary_key=True, index=True)
     trip_type = Column(Enum(TripTypeEnum, name='trip_type'))
     date_requested = Column(DateTime)
-    start_location = Column(String)
-    end_location = Column(String)
+    start_location_latitude = Column(Double)
+    start_location_longitude = Column(Double)
+    end_location_latitude = Column(Double)
+    end_location_longitude = Column(Double)
     driver = Column(String)
     passengers = Column(ARRAY(Integer))
 
