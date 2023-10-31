@@ -7,10 +7,10 @@ import 'package:sjuapp/user.dart';
 class Trip {
   final int id;
   final String tripType;
-  final double startLocationLatitude; // Updated
-  final double startLocationLongitude; // Updated
-  final double endLocationLatitude; // Updated
-  final double endLocationLongitude; // Updated
+  final double startLocationLatitude;
+  final double startLocationLongitude;
+  final double endLocationLatitude;
+  final double endLocationLongitude;
   final String driver;
   final List<int> passengers;
 
@@ -29,10 +29,10 @@ class Trip {
     return Trip(
       id: json['id'],
       tripType: json['trip_type'],
-      startLocationLatitude: json['start_location_latitude'], // Updated
-      startLocationLongitude: json['start_location_longitude'], // Updated
-      endLocationLatitude: json['end_location_latitude'], // Updated
-      endLocationLongitude: json['end_location_longitude'], // Updated
+      startLocationLatitude: json['start_location_latitude'],
+      startLocationLongitude: json['start_location_longitude'],
+      endLocationLatitude: json['end_location_latitude'],
+      endLocationLongitude: json['end_location_longitude'],
       driver: json['driver'],
       passengers: List<int>.from(json['passengers']),
     );
@@ -50,12 +50,11 @@ class TripHistoryPage extends StatefulWidget {
 
 class _TripHistoryPageState extends State<TripHistoryPage> {
   GoogleMapController? _mapController;
-  List<User> passengers = []; // List to store user objects
+  List<User> passengers = [];
 
   @override
   void initState() {
     super.initState();
-    // Fetch user objects for passengers
     fetchPassengers();
   }
   void fetchPassengers() async {
@@ -109,7 +108,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                   Text('Passengers: ${passengers.map((user) => '${user.firstName} ${user.lastName}').join(', ')}', style: TextStyle(fontSize: 16)),
                   SizedBox(height: 16),
                   Container(
-                    height: 200, // Adjust the height as needed
+                    height: 200,
                     child: GoogleMap(
                       onMapCreated: (controller) {
                         setState(() {
@@ -143,3 +142,4 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     );
   }
 }
+
