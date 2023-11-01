@@ -62,7 +62,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     final List<User> fetchedPassengers = [];
 
     for (final passengerId in passengerIds) {
-      final url = Uri.parse('http://127.0.0.1:8000/users/$passengerId');
+      final url = Uri.parse('http://10.0.0.21:8000/users/$passengerId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
