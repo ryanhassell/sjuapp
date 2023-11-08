@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:sjuapp/profile_page.dart';
 import 'package:sjuapp/trip_history.dart';
 
+import 'api_keys.dart';
 import 'current_ride_page.dart';
 
 
@@ -43,7 +44,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   void fetchTripsByUser(int userId) async {
-    final url = Uri.parse('http://10.0.0.21:8000/trips/by-user/$userId');
+    final url = Uri.parse('http://'+ip+'/trips/by-user/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -63,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<int?> fetchCurrentTripId(int userId) async {
-    final url = Uri.parse('http://10.0.0.21:8000/trips/current-trips/$userId');
+    final url = Uri.parse('http://'+ip+'/trips/current-trips/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

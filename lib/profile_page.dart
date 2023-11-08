@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'api_keys.dart';
 import 'user.dart'; // Your user model
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -20,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<User> fetchUserData() async {
     // Replace with the actual user ID and endpoint URL
     final userId = 1; // Example user ID
-    final url = Uri.parse('http://10.0.0.21:8000/users/$userId');
+    final url = Uri.parse('http://'+ip+'/users/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

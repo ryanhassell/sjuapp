@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'api_keys.dart';
+
 class User {
   final int id;
   final String firstName;
@@ -29,7 +31,7 @@ class User {
     );
   }
   // Replace with the actual endpoint URL
-  final userEndpoint = Uri.parse('http://10.0.0.21:8000/user/yourUserIdHere');
+  final userEndpoint = Uri.parse('http://'+ip+'/user/yourUserIdHere');
 
   Future<User> fetchUserData() async {
     final response = await http.get(userEndpoint);
