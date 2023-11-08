@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ARRAY, DateTime, Enum, Float, Double
 from sqlalchemy.ext.declarative import declarative_base
 
-from schemas.trip import TripTypeEnum
+from schemas.trip import TripTypeEnum, TripStatusEnum
 
 Base = declarative_base()
 
@@ -16,6 +16,7 @@ class Trip(Base):
     end_location_latitude = Column(Double)
     end_location_longitude = Column(Double)
     driver = Column(String)
+    trip_status = Column(Enum(TripStatusEnum, name='trip_status'))
     passengers = Column(ARRAY(Integer))
 
 
@@ -26,7 +27,7 @@ class User(Base):
     last_name = Column(String)
     date_registered = Column(DateTime)
     email_address = Column(String)
-    phone_number = Column(Integer)
+    phone_number = Column(String)
 
 
 class CampusLocation(Base):

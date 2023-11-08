@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 origins = [
-    "http://localhost",
-    "http://localhost:8080",  # Replace with your Flutter web app's URL
+    "http://10.0.0.21/",
+    "http://10.0.0.21/:8000",
 ]
 
 app.add_middleware(

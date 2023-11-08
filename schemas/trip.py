@@ -9,6 +9,11 @@ class TripTypeEnum(str, Enum):
     single = "single"
 
 
+class TripStatusEnum(str, Enum):
+    current = "current"
+    completed = "completed"
+
+
 class TripResponse(BaseModel):
     id: int
     start_location_latitude: float
@@ -21,6 +26,7 @@ class TripResponse(BaseModel):
     date_requested: datetime
 
     class Config:
+        from_attributes = True
         arbitrary_types_allowed = True
 
 
@@ -44,3 +50,8 @@ class TripUpdate(BaseModel):
     passengers: List[int]
     trip_type: TripTypeEnum
     date_requested: datetime
+
+
+class TripStatusResponse(BaseModel):
+    id: int
+    trip_status: TripStatusEnum

@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
@@ -5,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Trip, Base
-from schemas.trip import TripResponse, TripCreate, TripUpdate
+from schemas.trip import TripResponse, TripCreate, TripUpdate, TripStatusResponse
 
 # Define your connection string
 conn_string = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
@@ -44,7 +46,7 @@ async def list_trips_by_passenger_id(user_id: int, skip: int = 0, limit: int = 1
     return trips
 
 
-@router.get("/trip_id}", response_model=TripResponse)
+@router.get("/{trip_id}", response_model=TripResponse)
 async def get_trip(trip_id: int, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch a single trip by ID
     trip = db.query(Trip).filter(Trip.id == trip_id).first()
@@ -57,6 +59,7 @@ async def get_trip(trip_id: int, db: Session = Depends(get_db)):
 async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
     # Create a new trip in the database
     new_trip = Trip(**trip.dict())
+    new_trip.trip_status = "current"
     db.add(new_trip)
     db.commit()
     db.refresh(new_trip)
@@ -91,3 +94,27 @@ async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends
         return trip_to_update
     else:
         raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
+
+
+@router.put("/{trip_id}/status", response_model=TripStatusResponse)
+async def update_trip_status(trip_id: int, trip_data: TripStatusResponse, db: Session = Depends(get_db)):
+    # Retrieve the Trip object by its ID
+    trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
+
+    if trip_to_update:
+        # Update the Trip object with the new data
+        for field, value in trip_data.dict().items():
+            setattr(trip_to_update, field, value)
+
+        db.commit()
+        db.refresh(trip_to_update)
+        return trip_to_update
+    else:
+        raise HTTPException(status_code=404, detail=f"Trip with ID {trip_id} not found")
+
+
+@router.get("/current-trips/{user_id}", response_model=TripResponse)
+async def list_trips_by_passenger_id(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    # Use SQLAlchemy query to fetch trips with a certain passenger
+    trips = db.query(Trip).filter(Trip.passengers.any(user_id), Trip.trip_status == 'current').offset(skip).limit(limit).first()
+    return trips
