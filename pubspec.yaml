@@ -42,6 +42,11 @@ dependencies:
   # http
   http: ^0.13.3
 
+  # google maps api
+  google_maps_flutter: ^2.0.11
+  google_maps_flutter_web: ^0.3.2+2
+  universal_platform: ^1.0.0+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
