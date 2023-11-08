@@ -103,7 +103,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
         'date_requested': formattedDate, // Use the formattedDate with 'Z' appended
       };
 
-      final url = Uri.parse('http://10.0.0.21:8000/trips');
+      final url = Uri.parse('http://'+ip+'/trips');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json; charset=UTF-8'},

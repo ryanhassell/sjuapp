@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:sjuapp/trip_history.dart';
 import 'dart:convert';
 
+import 'api_keys.dart';
+
 class CurrentRidePage extends StatefulWidget {
   final int tripId;
 
@@ -25,7 +27,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   }
 
   Future<Trip?> fetchCurrentTrip(int tripId) async {
-    final url = Uri.parse('http://10.0.0.21:8000/trips/$tripId');
+    final url = Uri.parse('http://'+ip+'/trips/$tripId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -62,7 +64,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   }
 
   Future<Trip?> fetchCurrentTripByUserId(int userId) async {
-    final url = Uri.parse('http://10.0.0.21:8000/trips/current-trips/$userId');
+    final url = Uri.parse('http://'+ip+'/trips/current-trips/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -86,7 +88,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
       isCancelling = true;
     });
 
-    final url = Uri.parse('http://10.0.0.21:8000/trips/${currentTrip!.id}');
+    final url = Uri.parse('http://'+ip+'/trips/${currentTrip!.id}');
     final response = await http.delete(url);
 
     if (response.statusCode == 200) {
