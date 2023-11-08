@@ -12,9 +12,8 @@ void main() {
   runApp(const MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +26,13 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Home'),
+      home: const MyHomePage(title: 'SJU App Home'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title});
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -75,7 +74,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return null; // Return null if no current trip ID was found or in case of an error
   }
 
-
+  Widget _buildMainButton({required IconData icon, required String label, required VoidCallback onPressed}) {
+    return ElevatedButton.icon(
+      icon: Icon(icon, size: 24),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        primary: Colors.red[700], // Button background color
+        onPrimary: Colors.white, // Text and icon color
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        textStyle: const TextStyle(fontSize: 18),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+      ),
+      onPressed: onPressed,
+    );
+  }
 
 
   @override
@@ -83,27 +97,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[900],
-        title: Text(widget.title),
+        title: Row(
+          children: [
+            Image.asset('assets/sjuHawk.png', height: 50), // Adjust the size as needed
+            SizedBox(width: 8), // Give some space between the image and the text
+            Expanded( // Wrap the text in an Expanded widget
+              child: Text(widget.title),
+            ),
+          ],
+        ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.directions_car),
-            onPressed: () async {
-              int? currentTripId = await fetchCurrentTripId(1); // Replace with actual user ID
-              if (currentTripId != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CurrentRidePage(tripId: currentTripId),
-                  ),
-                );
-              } else {
-                // Handle the case where there is no current trip ID
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('No current ride found')),
-                );
-              }
-            },
-          ),
           IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
@@ -112,67 +115,89 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ElevatedButton(
+      body: Stack(
+          children: [
+      // The translucent background image
+      Container(
+      decoration: BoxDecoration(
+      image: DecorationImage(
+          image: AssetImage('assets/thwnd.jpg'),
+      fit: BoxFit.contain,
+      colorFilter: ColorFilter.mode(
+        Colors.white.withOpacity(0.33), // Adjust the opacity as needed
+        BlendMode.dstATop,
+      ),
+    ),
+    ),
+    ),
+       Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildMainButton(
+              icon: Icons.history,
+              label: 'View Trip History',
               onPressed: () {
-                fetchTripsByUser(1); // Pass the user ID
+                fetchTripsByUser(1);
               },
-              child: Text(
-                'View Trip History',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
             ),
-          ),
-
-
-              Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ElevatedButton(
+            const SizedBox(height: 16),
+            _buildMainButton(
+              icon: Icons.directions_car,
+              label: 'Request a Ride',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RideRequestPage()),
-                );              },
-              child: Text(
-                'Request a Ride',
-                style: TextStyle(
-                  color: Colors.white, // main page button color
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // button color
-              ),
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RideRequestPage()));
+              },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ElevatedButton(
+            const SizedBox(height: 16),
+            _buildMainButton(
+              icon: Icons.directions_bus,
+              label: 'View Shuttle Schedules',
               onPressed: () {
                 // Handle "View Shuttle Schedules" button press
               },
-              child: Text(
-                'View Shuttle Schedules',
-                style: TextStyle(
-                  color: Colors.white, // main page button color
+            ),
+            const Spacer(), // Push everything to the top
+            // Current Ride Button at the bottom
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.car_rental, size: 24),
+                label: Text('View Active Ride'),
+                style: OutlinedButton.styleFrom(
+                  primary: Colors.red[900], // Text and icon color
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  side: BorderSide(color: Colors.red[900]!),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // button color
+                onPressed: () async {
+                  int? currentTripId = await fetchCurrentTripId(1); // Replace with actual user ID
+                  if (currentTripId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CurrentRidePage(tripId: currentTripId),
+                      ),
+                    );
+                  } else {
+                    // Handle the case where there is no current trip ID
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('No active ride found')),
+                    );
+                  }
+                },
               ),
             ),
-          ),
-          Divider(height: 20, color: Colors.black),
-        ],
+          ],
+        ),
       ),
+    ]
+      )
     );
   }
 }
