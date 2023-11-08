@@ -1,10 +1,13 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 class User {
   final int id;
   final String firstName;
   final String lastName;
   final DateTime dateRegistered;
   final String emailAddress;
-  final int phoneNumber;
+  final String phoneNumber;
 
   User({
     required this.id,
@@ -25,4 +28,18 @@ class User {
       phoneNumber: json['phone_number'],
     );
   }
+  // Replace with the actual endpoint URL
+  final userEndpoint = Uri.parse('http://10.0.0.21:8000/user/yourUserIdHere');
+
+  Future<User> fetchUserData() async {
+    final response = await http.get(userEndpoint);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return User.fromJson(data);
+    } else {
+      throw Exception('Failed to load user data');
+    }
+  }
+
 }

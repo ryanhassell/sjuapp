@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sjuapp/user.dart';
+import 'package:sjuapp/ride_request_page.dart';
 import 'dart:convert';
-import 'trip_history.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sjuapp/profile_page.dart';
+import 'package:sjuapp/trip_history.dart';
+
+import 'current_ride_page.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'sjuapp Home Page'),
+      home: const MyHomePage(title: 'Home'),
     );
   }
 }
@@ -60,6 +63,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<int?> fetchCurrentTripId(int userId) async {
+    final url = Uri.parse('http://10.0.0.21:8000/trips/current-trips/$userId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      // Assuming responseData is a map representing the trip data
+      return responseData['id']; // Get the trip ID from the trip data
+    }
+    return null; // Return null if no current trip ID was found or in case of an error
+  }
+
+
 
 
   @override
@@ -70,9 +86,28 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: [
           IconButton(
+            icon: Icon(Icons.directions_car),
+            onPressed: () async {
+              int? currentTripId = await fetchCurrentTripId(1); // Replace with actual user ID
+              if (currentTripId != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CurrentRidePage(tripId: currentTripId),
+                  ),
+                );
+              } else {
+                // Handle the case where there is no current trip ID
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('No current ride found')),
+                );
+              }
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
-              // Handle user icon button press
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
             },
           ),
         ],
@@ -84,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: ElevatedButton(
               onPressed: () {
-                fetchTripsByUser(3); // Pass the user ID
+                fetchTripsByUser(1); // Pass the user ID
               },
               child: Text(
                 'View Trip History',
@@ -93,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.red,
+                backgroundColor: Colors.red,
               ),
             ),
           ),
@@ -103,8 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: ElevatedButton(
               onPressed: () {
-                // Handle "Request a Ride" button press
-              },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RideRequestPage()),
+                );              },
               child: Text(
                 'Request a Ride',
                 style: TextStyle(
@@ -112,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.red, // button color
+                backgroundColor: Colors.red, // button color
               ),
             ),
           ),
@@ -129,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.red, // button color
+                backgroundColor: Colors.red, // button color
               ),
             ),
           ),
