@@ -4,7 +4,6 @@ import 'package:sjuapp/ride_request_page.dart';
 import 'dart:convert';
 import 'package:sjuapp/profile_page.dart';
 import 'package:sjuapp/trip_history.dart';
-
 import 'api_keys.dart';
 import 'current_ride_page.dart';
 
@@ -98,18 +97,31 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[900],
-        title: Row(
-          children: [
-            Image.asset('assets/sjuHawk.png', height: 50), // Adjust the size as needed
-            SizedBox(width: 8), // Give some space between the image and the text
-            Expanded( // Wrap the text in an Expanded widget
-              child: Text(widget.title),
-            ),
-          ],
+        title: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Icon(Icons.home, size: 40, color: Colors.white),
+              SizedBox(width: 8),
+              // Apply a translation to move the text down
+              Transform.translate(
+                offset: Offset(0, 4), // Adjust the vertical offset as needed
+                child: Text(
+                  'Home',
+                  style: TextStyle(
+                    fontSize: 29,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person, size:40),
+                  color: Colors.white,
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
             },

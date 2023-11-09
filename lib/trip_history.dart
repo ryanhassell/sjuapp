@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sjuapp/user.dart';
-
 import 'api_keys.dart';
 
 class Trip {
@@ -92,7 +91,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     final List<User> fetchedPassengers = [];
 
     for (final passengerId in passengerIds) {
-      final url = Uri.parse('http://'+ip+'/users/$passengerId');
+      final url = Uri.parse('http://' + ip + '/users/$passengerId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -126,7 +125,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
 
   void _onBackPressed() {
     setState(() {
-      _isPageContentVisible = false; // Set the entire page content visibility to false
+      _isPageContentVisible =
+      false; // Set the entire page content visibility to false
     });
 
     // Delay the navigation to allow setState to take effect
@@ -136,6 +136,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       }
     });
   }
+
   Future<String> getLocationDescription(double latitude,
       double longitude) async {
     final url = Uri.parse(
@@ -145,10 +146,26 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     if (response.statusCode == 200) {
       final decoded = json.decode(response.body);
       if (decoded['results'] is List && decoded['results'].isNotEmpty) {
-        return decoded['results'][0]['formatted_address'];
+        final results = decoded['results'][0]['address_components'] as List<
+            dynamic>;
+
+        // Extract street number and name
+        final streetNumber = _getLongName(results, 'street_number');
+        final streetName = _getLongName(results, 'route');
+
+        return '$streetNumber $streetName';
       }
     }
 
+    return '';
+  }
+
+  String _getLongName(List<dynamic> components, String type) {
+    for (final component in components) {
+      if (component['types'].contains(type)) {
+        return component['long_name'].toString();
+      }
+    }
     return '';
   }
 
@@ -198,51 +215,110 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   }
 
   Widget buildTripItem(Trip trip) {
+    // Calculate the midpoint between start and end locations
+    final double midLat = (trip.startLocationLatitude +
+        trip.endLocationLatitude) / 2;
+    final double midLng = (trip.startLocationLongitude +
+        trip.endLocationLongitude) / 2;
+
     return GestureDetector(
       onTap: () {
         // Handle trip bubble click here
       },
-      child: Container(
+      child: Card(
         margin: EdgeInsets.all(16),
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.red),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
+        elevation: 4, // Adjust the elevation for a shadow effect
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('$tripDescription', style: TextStyle(fontSize: 20)),
-            Text('Start Location: ${trip.startLocationLatitude}, ${trip.startLocationLongitude}', style: TextStyle(fontSize: 16)),
-            Text('End Location: ${trip.endLocationLatitude}, ${trip.endLocationLongitude}', style: TextStyle(fontSize: 16)),
-            Text('Driver: ${trip.driver}', style: TextStyle(fontSize: 16)),
-            Text('Passengers: ${passengers.map((user) => '${user.firstName} ${user.lastName}').join(', ')}', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Visibility(
-              visible: _isPageContentVisible,
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
               child: Container(
-                height: 200,
+                height: 150, // Adjust the height as needed
+                width: double.infinity,
                 child: GoogleMap(
                   onMapCreated: (controller) {
                     _mapController = controller;
                   },
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(trip.startLocationLatitude, trip.startLocationLongitude),
+                    target: LatLng(midLat, midLng),
+                    // Center the camera on the midpoint
                     zoom: 15,
                   ),
                   markers: {
                     Marker(
                       markerId: MarkerId('startLocation'),
-                      position: LatLng(trip.startLocationLatitude, trip.startLocationLongitude),
+                      position: LatLng(trip.startLocationLatitude,
+                          trip.startLocationLongitude),
                       infoWindow: InfoWindow(title: 'Start Location'),
                     ),
                     Marker(
                       markerId: MarkerId('endLocation'),
-                      position: LatLng(trip.endLocationLatitude, trip.endLocationLongitude),
+                      position: LatLng(
+                          trip.endLocationLatitude, trip.endLocationLongitude),
                       infoWindow: InfoWindow(title: 'End Location'),
                     ),
                   },
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$tripDescription',
+                    style: TextStyle(fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SquareFont'),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.car_rental, color: Colors.green),
+                        // Use the car_rental icon and make it green
+                        SizedBox(width: 8),
+                        Text(
+                          'Driver: ${trip.driver}',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight
+                              .bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Passengers:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8.0,
+                    // Adjust the spacing between passenger bubbles
+                    runSpacing: 4.0,
+                    // Adjust the spacing between lines of passenger bubbles
+                    children: passengers.map((user) {
+                      return GestureDetector(
+                        onTap: () {
+                          // Handle passenger bubble click here
+                        },
+                        child: Chip(
+                          label: Text('${user.firstName} ${user.lastName}'),
+                          avatar: Icon(Icons.person),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
             ),
           ],
