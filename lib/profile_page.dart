@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'api_keys.dart';
+import 'global_vars.dart';
 import 'user.dart'; // Your user model
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     ListTile(
                       title: buildTitle('Date Registered'),
-                      subtitle: buildSubtitle('${snapshot.data!.dateRegistered.day}/${snapshot.data!.dateRegistered.month}/${snapshot.data!.dateRegistered.year}'),
+                      subtitle: buildSubtitle('${snapshot.data!.dateRegistered.month}/${snapshot.data!.dateRegistered.day}/${snapshot.data!.dateRegistered.year}'),
                     ),
                     ListTile(
                       title: buildTitle('Email Address'),
