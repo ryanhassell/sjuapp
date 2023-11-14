@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 
-import 'api_keys.dart';
+import 'global_vars.dart';
 import 'current_ride_page.dart';
 
 class RideRequestPage extends StatefulWidget {
@@ -96,7 +96,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
         'start_location_longitude': _pickupLocationLongitude,
         'end_location_latitude': _dropoffLocationLatitude,
         'end_location_longitude': _dropoffLocationLongitude,
-        'driver': "string", // Replace with actual driver's name or ID
+        'driver': "5", // Replace with actual driver's name or ID
         'passengers': [1], // Replace with actual passenger IDs
         'trip_type': "group",
         'trip_status': "current",

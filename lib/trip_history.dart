@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sjuapp/user.dart';
-import 'api_keys.dart';
+import 'global_vars.dart';
 
 class Trip {
   final int id;
@@ -12,9 +13,12 @@ class Trip {
   final double startLocationLongitude;
   final double endLocationLatitude;
   final double endLocationLongitude;
-  final String driver;
+  final int driver;
   final List<int> passengers;
   final String dateRequested;
+  final String tripStatus;
+  GoogleMapController? mapController;
+  String tripDescription = '';
 
   Trip({
     required this.id,
@@ -26,6 +30,9 @@ class Trip {
     required this.driver,
     required this.passengers,
     required this.dateRequested,
+    required this.tripStatus,
+    this.mapController, required
+    String tripDescription,
   });
 
   factory Trip.fromJson(Map<String, dynamic> json) {
@@ -39,10 +46,12 @@ class Trip {
       driver: json['driver'],
       passengers: List<int>.from(json['passengers']),
       dateRequested: json['date_requested'],
+      tripStatus: json['trip_status'],
+      mapController: null, // Initialize with null
+      tripDescription: '',
     );
   }
 }
-
 
 class TripHistoryPage extends StatefulWidget {
   final List<Trip> trips;
@@ -58,7 +67,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   List<User> passengers = [];
   String tripDescription = '';
   late Future<void> _loadingFuture;
-  bool _isPageContentVisible = true; // This flag will handle the visibility of the whole page content
+  bool _isPageContentVisible = true;
 
   @override
   void initState() {
@@ -67,15 +76,9 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   }
 
   Future<void> _loadData() async {
-    if (widget.trips.isNotEmpty) {
-      await fetchPassengers();
-      final trip = widget.trips.first;
-      await updateTripDescription(
-          trip.startLocationLatitude,
-          trip.startLocationLongitude,
-          trip.endLocationLatitude,
-          trip.endLocationLongitude
-      );
+    for (final trip in widget.trips) {
+      await fetchPassengers(trip);
+      await updateTripDescription(trip);
     }
   }
 
@@ -85,9 +88,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     super.dispose();
   }
 
-  Future<void> fetchPassengers() async {
-    final List<int> passengerIds = widget.trips.expand((trip) =>
-    trip.passengers).toList();
+  Future<void> fetchPassengers(Trip trip) async {
+    final List<int> passengerIds = trip.passengers;
     final List<User> fetchedPassengers = [];
 
     for (final passengerId in passengerIds) {
@@ -108,56 +110,52 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     }
   }
 
-  Future<void> updateTripDescription(double startLat, double startLng,
-      double endLat, double endLng) async {
-    final startLocation = await getLocationDescription(startLat, startLng);
-    final endLocation = await getLocationDescription(endLat, endLng);
 
-    final tripType = widget.trips[0].tripType;
-    final description = tripType == 'group'
-        ? 'Group Trip from $startLocation to $endLocation'
-        : 'Trip from $startLocation to $endLocation';
+  Future<void> updateTripDescription(Trip trip) async {
+    final startLocation = await getLocationDescription(
+      trip.startLocationLatitude,
+      trip.startLocationLongitude,
+    );
+    final endLocation = await getLocationDescription(
+      trip.endLocationLatitude,
+      trip.endLocationLongitude,
+    );
 
+    final description = 'Trip from $startLocation to $endLocation';
+
+    // Update the tripDescription field for the specific trip
     setState(() {
-      tripDescription = description;
+      trip.tripDescription = description;
     });
   }
 
-  void _onBackPressed() {
-    setState(() {
-      _isPageContentVisible =
-      false; // Set the entire page content visibility to false
-    });
-
-    // Delay the navigation to allow setState to take effect
-    Future.delayed(Duration(milliseconds: 100), () {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-    });
-  }
-
-  Future<String> getLocationDescription(double latitude,
-      double longitude) async {
-    final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$googleApiKey');
+  Future<String> getLocationDescription(double latitude, double longitude) async {
+    final url = Uri.parse('https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$googleApiKey');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final decoded = json.decode(response.body);
       if (decoded['results'] is List && decoded['results'].isNotEmpty) {
-        final results = decoded['results'][0]['address_components'] as List<
-            dynamic>;
+        final results = decoded['results'] as List<dynamic>;
 
-        // Extract street number and name
-        final streetNumber = _getLongName(results, 'street_number');
-        final streetName = _getLongName(results, 'route');
+        // Iterate through results to find the nearest address
+        for (final result in results) {
+          final components = result['address_components'] as List<dynamic>;
+          final streetNumber = _getLongName(components, 'street_number');
+          final streetName = _getLongName(components, 'route');
 
-        return '$streetNumber $streetName';
+          if (streetNumber.isNotEmpty && streetName.isNotEmpty) {
+            return '$streetNumber $streetName';
+          }
+        }
+
+        // If no valid address found, use a more general description
+        final formattedAddress = results[0]['formatted_address'];
+        return 'an address close to $formattedAddress';
       }
     }
 
-    return '';
+    return 'Location not found';
   }
 
   String _getLongName(List<dynamic> components, String type) {
@@ -169,13 +167,12 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     return '';
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
         _onBackPressed();
-        return false; // We are handling the back button ourselves
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -185,13 +182,10 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
           future: _loadingFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              // While waiting for the futures to complete, show a loading indicator
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              // If an error occurs, display an error message
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
-              // Once the data is fetched, show the page content
               return _isPageContentVisible ? buildPageContent() : SizedBox();
             }
           },
@@ -205,21 +199,21 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       return Center(child: Text('No trips available'));
     }
 
-    final trip = widget.trips[0];
     return ListView.builder(
       itemCount: widget.trips.length,
       itemBuilder: (context, index) {
+        final trip = widget.trips[index];
         return buildTripItem(trip);
       },
     );
   }
 
   Widget buildTripItem(Trip trip) {
-    // Calculate the midpoint between start and end locations
-    final double midLat = (trip.startLocationLatitude +
-        trip.endLocationLatitude) / 2;
-    final double midLng = (trip.startLocationLongitude +
-        trip.endLocationLongitude) / 2;
+    final double midLat =
+        (trip.startLocationLatitude + trip.endLocationLatitude) / 2;
+    final double midLng =
+        (trip.startLocationLongitude + trip.endLocationLongitude) / 2;
+    final LatLngBounds bounds = getBounds(trip);
 
     return GestureDetector(
       onTap: () {
@@ -230,28 +224,32 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        elevation: 4, // Adjust the elevation for a shadow effect
+        elevation: 4,
         child: Column(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
               child: Container(
-                height: 150, // Adjust the height as needed
+                height: 150,
                 width: double.infinity,
                 child: GoogleMap(
                   onMapCreated: (controller) {
                     _mapController = controller;
+
+                    // Adjust the camera position to fit the bounds of the trip
+                    _mapController?.animateCamera(
+                      CameraUpdate.newLatLngBounds(bounds, 50.0),
+                    );
                   },
                   initialCameraPosition: CameraPosition(
                     target: LatLng(midLat, midLng),
-                    // Center the camera on the midpoint
-                    zoom: 15,
+                    zoom: 8,
                   ),
                   markers: {
                     Marker(
                       markerId: MarkerId('startLocation'),
-                      position: LatLng(trip.startLocationLatitude,
-                          trip.startLocationLongitude),
+                      position: LatLng(
+                          trip.startLocationLatitude, trip.startLocationLongitude),
                       infoWindow: InfoWindow(title: 'Start Location'),
                     ),
                     Marker(
@@ -270,30 +268,44 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$tripDescription',
-                    style: TextStyle(fontSize: 20,
+                    '${trip.tripDescription}', // Use tripDescription for the specific trip
+                    style: TextStyle(
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'SquareFont'),
                   ),
                   SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.car_rental, color: Colors.green),
-                        // Use the car_rental icon and make it green
-                        SizedBox(width: 8),
-                        Text(
-                          'Driver: ${trip.driver}',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight
-                              .bold),
-                        ),
-                      ],
-                    ),
+                  FutureBuilder(
+                    future: fetchDriverInfo(trip.driver),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text(
+                            'Error fetching driver info: ${snapshot.error}');
+                      } else {
+                        final driverInfo = snapshot.data as User;
+                        return Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.car_rental, color: Colors.green),
+                              SizedBox(width: 8),
+                              Text(
+                                'Driver: ${driverInfo.firstName} ${driverInfo.lastName}',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -303,18 +315,31 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                   SizedBox(height: 8),
                   Wrap(
                     spacing: 8.0,
-                    // Adjust the spacing between passenger bubbles
                     runSpacing: 4.0,
-                    // Adjust the spacing between lines of passenger bubbles
-                    children: passengers.map((user) {
-                      return GestureDetector(
-                        onTap: () {
-                          // Handle passenger bubble click here
+                    children: trip.passengers.map((passengerId) {
+                      return FutureBuilder(
+                        future: fetchPassengerInfo(passengerId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text(
+                                'Error fetching passenger info: ${snapshot.error}');
+                          } else {
+                            final passengerInfo = snapshot.data as User;
+                            return GestureDetector(
+                              onTap: () {
+                                // Handle passenger bubble click here
+                              },
+                              child: Chip(
+                                label: Text(
+                                    '${passengerInfo.firstName} ${passengerInfo.lastName}'),
+                                avatar: Icon(Icons.person),
+                              ),
+                            );
+                          }
                         },
-                        child: Chip(
-                          label: Text('${user.firstName} ${user.lastName}'),
-                          avatar: Icon(Icons.person),
-                        ),
                       );
                     }).toList(),
                   ),
@@ -324,6 +349,58 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<User> fetchPassengerInfo(int passengerId) async {
+    final url = Uri.parse('http://' + ip + '/users/$passengerId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return User.fromJson(data);
+    } else {
+      throw Exception('Failed to load passenger information');
+    }
+  }
+
+
+
+  Future<User> fetchDriverInfo(int driverId) async {
+    final url = Uri.parse('http://' + ip + '/users/$driverId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return User.fromJson(data);
+    } else {
+      throw Exception('Failed to load driver information');
+    }
+  }
+
+  void _onBackPressed() {
+    setState(() {
+      _isPageContentVisible = false;
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+  LatLngBounds getBounds(Trip trip) {
+    final LatLng startLocation = LatLng(trip.startLocationLatitude, trip.startLocationLongitude);
+    final LatLng endLocation = LatLng(trip.endLocationLatitude, trip.endLocationLongitude);
+
+    final double minLat = min(startLocation.latitude, endLocation.latitude);
+    final double maxLat = max(startLocation.latitude, endLocation.latitude);
+    final double minLng = min(startLocation.longitude, endLocation.longitude);
+    final double maxLng = max(startLocation.longitude, endLocation.longitude);
+
+    return LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
     );
   }
 }
