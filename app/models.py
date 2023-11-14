@@ -22,6 +22,7 @@ class Trip(Base):
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
+    user_type = Column(Enum(UserTypeEnum, name='user_type'))
     first_name = Column(String)
     last_name = Column(String)
     date_registered = Column(DateTime)
@@ -48,3 +49,15 @@ class Vehicle(Base):
     color = Column(String)
     seatsAvailable = Column(Integer)
     licensePlate = Column(String)
+
+class Shuttle(Base):
+    __tablename__ = "shuttle"
+    id = Column(Integer, primary_key=True, index=True)
+    shuttle_direction = Column(Enum(ShuttleDirectionEnum, name='shuttle_direction'))
+    arrival_time = Column(DateTime)
+    departure_time = Column(DateTime)
+    current_location_latitude = Column(Double)
+    current_location_longitude = Column(Double)
+    shuttle_type = Column(String) #type of vehicle
+    shuttle_color = Column(String)  #color (usually white or red)
+
