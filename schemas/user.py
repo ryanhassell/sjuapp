@@ -1,37 +1,39 @@
 from datetime import datetime
-from typing import List
-
 from pydantic import BaseModel
+from enum import Enum
+
 
 class UserTypeEnum(str, Enum):
-    driver = "Driver"
-    rider = "Rider"
+    driver = "driver"
+    student = "student"
+
 
 class UserResponse(BaseModel):
     id: int
-    user_type: UserTypeEnum
     first_name: str
     last_name: str
     date_registered: datetime
     email_address: str
     phone_number: str
+    user_type: UserTypeEnum
 
     class Config:
         arbitrary_types_allowed = True
 
+
 class UserCreate(BaseModel):
-    user_type: UserTypeEnum
     first_name: str
     last_name: str
     date_registered: datetime
     email_address: str
     phone_number: str
+    user_type: UserTypeEnum
 
 
 class UserUpdate(BaseModel):
-    user_type: UserTypeEnum
     first_name: str
     last_name: str
     date_registered: datetime
     email_address: str
     phone_number: str
+    user_type: UserTypeEnum

@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from routers import users, trips, campus_locations, vehicles
+from routers import users, trips, campus_locations, vehicles, shuttles
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 origins = [
-    "http://10.0.0.21/",
-    "http://10.0.0.21/:8000",
+    "http://192.168.1.172/",
+    "http://192.168.1.172/:8000",
 ]
 
 app.add_middleware(
@@ -20,4 +20,5 @@ app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(trips.router, prefix="/trips", tags=["Trips"])
 app.include_router(campus_locations.router, prefix="/campus_locations", tags=["Campus Locations"])
 app.include_router(vehicles.router, prefix="/vehicles", tags=["Vehicles"])
+app.include_router(shuttles.router, prefix="/shuttles", tags=["Shuttles"])
 

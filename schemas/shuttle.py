@@ -1,12 +1,11 @@
 from datetime import datetime
-from typing import List
 from pydantic import BaseModel
 from enum import Enum
 
 
 class ShuttleDirectionEnum(str, Enum):
-    east = "East"
-    west = "West"
+    east = "east"
+    west = "west"
 
 
 class ShuttleResponse(BaseModel):
@@ -17,7 +16,6 @@ class ShuttleResponse(BaseModel):
     current_location_latitude: float
     current_location_longitude: float
     shuttle_type: str
-    shuttle_color: str
 
     class Config:
         arbitrary_types_allowed = True
@@ -30,7 +28,6 @@ class ShuttleCreate(BaseModel):
     current_location_latitude: float
     current_location_longitude: float
     shuttle_type: str
-    shuttle_color: str
 
 
 class ShuttleUpdate(BaseModel):
@@ -40,4 +37,3 @@ class ShuttleUpdate(BaseModel):
     current_location_latitude: float
     current_location_longitude: float
     shuttle_type: str
-    shuttle_color: str

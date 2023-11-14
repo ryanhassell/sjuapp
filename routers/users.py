@@ -20,6 +20,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 router = APIRouter()
 
+
 # Dependency to get a database session
 def get_db():
     db = SessionLocal()
@@ -84,3 +85,9 @@ async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends
         return user_to_update
     else:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
+
+
+@router.get("/drivers/", response_model=list[UserResponse])
+async def list_drivers(db: Session = Depends(get_db)):
+    drivers = db.query(User).filter(User.user_type == 'driver').all()
+    return drivers

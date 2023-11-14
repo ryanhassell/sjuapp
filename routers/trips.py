@@ -116,5 +116,14 @@ async def update_trip_status(trip_id: int, trip_data: TripStatusResponse, db: Se
 @router.get("/current-trips/{user_id}", response_model=TripResponse)
 async def list_trips_by_passenger_id(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.passengers.any(user_id), Trip.trip_status == 'current').offset(skip).limit(limit).first()
+    trips = db.query(Trip).filter(Trip.passengers.any(user_id), Trip.trip_status == 'current').offset(skip).limit(
+        limit).first()
+    return trips
+
+
+@router.get("/current-trips-by-driver/{user_id}", response_model=TripResponse)
+async def list_trips_by_driver(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    # Use SQLAlchemy query to fetch trips with a certain passenger
+    trips = db.query(Trip).filter(Trip.driver == user_id, Trip.trip_status == 'current').offset(skip).limit(
+        limit).first()
     return trips

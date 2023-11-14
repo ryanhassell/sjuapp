@@ -20,7 +20,7 @@ class TripResponse(BaseModel):
     start_location_longitude: float
     end_location_latitude: float
     end_location_longitude: float
-    driver: str
+    driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
     date_requested: datetime
@@ -35,7 +35,7 @@ class TripCreate(BaseModel):
     start_location_longitude: float
     end_location_latitude: float
     end_location_longitude: float
-    driver: str
+    driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
     date_requested: datetime
@@ -46,7 +46,7 @@ class TripUpdate(BaseModel):
     start_location_longitude: float
     end_location_latitude: float
     end_location_longitude: float
-    driver: str
+    driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
     date_requested: datetime
