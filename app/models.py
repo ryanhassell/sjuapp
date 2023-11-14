@@ -32,7 +32,6 @@ class User(Base):
     date_registered = Column(DateTime)
     email_address = Column(String)
     phone_number = Column(String)
-    on_duty = Column(Boolean)
     driver = relationship('Driver', back_populates='user')
 
 
@@ -68,8 +67,9 @@ class Shuttle(Base):
 
 
 class Driver(Base):
-    __tablename__ = "available_drivers"
+    __tablename__ = "drivers"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    available = Column(Boolean)
     user = relationship('User', back_populates='driver')
 

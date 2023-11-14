@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Base, User, Trip
+from routers.drivers import create_driver, auto_create_driver
 from schemas.user import UserResponse, UserCreate, UserUpdate
 from schemas.user import UserCreate
 
@@ -49,10 +50,19 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 @router.post("", response_model=UserResponse)
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     # Create a new user in the database
-    new_user = User(**user.dict())
+    new_user = User(
+        user_type=user.user_type,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        date_registered=user.date_registered,
+        email_address=user.email_address,
+        phone_number=user.phone_number,
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    if new_user.user_type == "driver":
+        await auto_create_driver(new_user.id, db)
     return new_user
 
 
@@ -85,9 +95,3 @@ async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends
         return user_to_update
     else:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
-
-
-@router.get("/drivers/", response_model=list[UserResponse])
-async def list_drivers(db: Session = Depends(get_db)):
-    drivers = db.query(User).filter(User.user_type == 'driver').all()
-    return drivers
