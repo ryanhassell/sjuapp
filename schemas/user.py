@@ -7,8 +7,6 @@ class UserTypeEnum(str, Enum):
     driver = "Driver"
     rider = "Rider"
 
-
-
 class UserResponse(BaseModel):
     id: int
     user_type: UserTypeEnum
