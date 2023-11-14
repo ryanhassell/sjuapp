@@ -96,7 +96,8 @@ async def refresh_drivers(db: Session = Depends(get_db)):
         # Update this part to handle the potential None value for new_driver.id
         new_drivers.append(DriverResponse(
             user_id=new_driver.user_id,
-            available=new_driver.available
+            available=new_driver.available,
+            current_trip=0,
         ))
 
     # Step 4: Commit the changes to the database
@@ -110,6 +111,29 @@ async def refresh_drivers(db: Session = Depends(get_db)):
 async def change_driver_availability(user_id: int, availability: bool, db: Session = Depends(get_db)):
     driver = db.query(Driver).filter(Driver.user_id == user_id).first()
     if driver is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Driver not found")
     driver.available = availability
+    db.add(driver)
+    db.commit()
+    db.refresh(driver)
+    return driver
+
+
+@router.post("/{user_id}/add-trip/{trip_id}", response_model=DriverResponse)
+async def change_current_trip(user_id: int, trip_id: int, db: Session = Depends(get_db)):
+    driver = db.query(Driver).filter(Driver.user_id == user_id).first()
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    driver.current_trip = trip_id
+    db.add(driver)
+    db.commit()
+    db.refresh(driver)
+    return driver
+
+
+@router.get("/available-drivers", response_model=DriverResponse)
+async def discover_available_drivers(db: Session = Depends(get_db)):
+    driver = db.query(Driver).filter(Driver.available == True).first()
+    if driver is None:
+        raise HTTPException(status_code=404, detail="No Drivers are Available")
     return driver

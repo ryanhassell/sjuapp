@@ -23,6 +23,7 @@ class TripResponse(BaseModel):
     driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
+    trip_status: TripStatusEnum
     date_requested: datetime
 
     class Config:
@@ -38,6 +39,7 @@ class TripCreate(BaseModel):
     driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
+    trip_status: TripStatusEnum
     date_requested: datetime
 
 
@@ -49,6 +51,7 @@ class TripUpdate(BaseModel):
     driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
+    trip_status: TripStatusEnum
     date_requested: datetime
 
 

@@ -71,5 +71,6 @@ class Driver(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     available = Column(Boolean)
+    current_trip = Column(Integer)
     user = relationship('User', back_populates='driver')
 
