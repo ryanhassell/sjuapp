@@ -6,7 +6,7 @@ psycopg2 (connection to DB from backend)
 PostgreSQL (Backend)
 
 # Database Configuration
-Download PostgreSQL and PGAdmin (recommended) or any SQL DB editor of your choice.
+Download PostgreSQL and PGAdmin.
 Create server and DB 'sjuapp'
 Replace the global variables in global_variables.py with their respective values.
 
