@@ -34,6 +34,9 @@ class User(Base):
     phone_number = Column(String)
     on_duty = Column(Boolean)
     driver = relationship('Driver', back_populates='user')
+    username = Column(String)
+    password = Column(String)
+    authenticated = Column(Boolean)
 
 
 class CampusLocation(Base):
