@@ -58,6 +58,9 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
         date_registered=user.date_registered,
         email_address=user.email_address,
         phone_number=user.phone_number,
+        sju_id=user.sju_id,
+        password=user.password,
+        authenticated=user.authenticated,
     )
     db.add(new_user)
     db.commit()
@@ -96,16 +99,19 @@ async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends
         return user_to_update
     else:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
-        
-        
+
+
 @router.get("/drivers/", response_model=list[UserResponse])
 async def list_drivers(db: Session = Depends(get_db)):
     drivers = db.query(User).filter(User.user_type == 'driver').all()
     return drivers
 
 
-@router.get("/authenticate/{username}", response_model=list[UserResponse])
-async def authenticate_username(sju_id: int, password: str,  db: Session = Depends(get_db)):
-    if User.sju_id == sju_id and User.password == password:
-        User.authenticated = True
-        return User.authenticated
+@router.get("/login/{sju_id}/{password}", response_model=UserResponse)
+async def user_login(sju_id: str, password: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.sju_id == sju_id, User.password == password).first()
+    user.authenticated = True
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user

@@ -33,7 +33,7 @@ class User(Base):
     email_address = Column(String)
     phone_number = Column(String)
     driver = relationship('Driver', back_populates='user')
-    username = Column(String)
+    sju_id = Column(String)
     password = Column(String)
     authenticated = Column(Boolean)
 

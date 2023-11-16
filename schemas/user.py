@@ -16,7 +16,7 @@ class UserResponse(BaseModel):
     email_address: str
     phone_number: str
     user_type: UserTypeEnum
-    username: str
+    sju_id: str
     password: str
     authenticated: bool
 
@@ -31,7 +31,7 @@ class UserCreate(BaseModel):
     email_address: str
     phone_number: str
     user_type: UserTypeEnum
-    username: str
+    sju_id: str
     password: str
     authenticated: bool
 
@@ -43,7 +43,7 @@ class UserUpdate(BaseModel):
     email_address: str
     phone_number: str
     user_type: UserTypeEnum
-    username: str
+    sju_id: str
     password: str
     authenticated: bool
 
