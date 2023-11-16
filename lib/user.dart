@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:http/http.dart' as http;
 
 import 'global_vars.dart';
@@ -10,6 +11,9 @@ class User {
   final DateTime dateRegistered;
   final String emailAddress;
   final String phoneNumber;
+  final String sju_id;
+  final String password;
+  final Bool authenticated;
 
   User({
     required this.id,
@@ -18,6 +22,9 @@ class User {
     required this.dateRegistered,
     required this.emailAddress,
     required this.phoneNumber,
+    required this.sju_id,
+    required this.password,
+    required this.authenticated,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -28,6 +35,9 @@ class User {
       dateRegistered: DateTime.parse(json['date_registered']),
       emailAddress: json['email_address'],
       phoneNumber: json['phone_number'],
+      sju_id: json['sju_id'],
+      password: json['password'],
+      authenticated: json['authenticated'],
     );
   }
   // Replace with the actual endpoint URL
