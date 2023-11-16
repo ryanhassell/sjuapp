@@ -7,6 +7,7 @@ from app.models import Base, User, Trip
 from routers.drivers import create_driver, auto_create_driver
 from schemas.user import UserResponse, UserCreate, UserUpdate
 from schemas.user import UserCreate
+import re
 
 # Define your connection string
 conn_string = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
@@ -95,3 +96,16 @@ async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends
         return user_to_update
     else:
         raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
+        
+        
+@router.get("/drivers/", response_model=list[UserResponse])
+async def list_drivers(db: Session = Depends(get_db)):
+    drivers = db.query(User).filter(User.user_type == 'driver').all()
+    return drivers
+
+
+@router.get("/authenticate/{username}", response_model=list[UserResponse])
+async def authenticate_username(sju_id: int, password: str,  db: Session = Depends(get_db)):
+    if User.sju_id == sju_id and User.password == password:
+        User.authenticated = True
+        return User.authenticated

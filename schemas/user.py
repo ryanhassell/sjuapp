@@ -16,6 +16,9 @@ class UserResponse(BaseModel):
     email_address: str
     phone_number: str
     user_type: UserTypeEnum
+    username: str
+    password: str
+    authenticated: bool
 
     class Config:
         arbitrary_types_allowed = True
@@ -28,6 +31,9 @@ class UserCreate(BaseModel):
     email_address: str
     phone_number: str
     user_type: UserTypeEnum
+    username: str
+    password: str
+    authenticated: bool
 
 
 class UserUpdate(BaseModel):
@@ -37,3 +43,7 @@ class UserUpdate(BaseModel):
     email_address: str
     phone_number: str
     user_type: UserTypeEnum
+    username: str
+    password: str
+    authenticated: bool
+
