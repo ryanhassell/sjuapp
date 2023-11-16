@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import users, trips, campus_locations, vehicles, shuttles
+from routers import users, trips, campus_locations, vehicles, shuttles, drivers
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,4 +21,4 @@ app.include_router(trips.router, prefix="/trips", tags=["Trips"])
 app.include_router(campus_locations.router, prefix="/campus_locations", tags=["Campus Locations"])
 app.include_router(vehicles.router, prefix="/vehicles", tags=["Vehicles"])
 app.include_router(shuttles.router, prefix="/shuttles", tags=["Shuttles"])
-
+app.include_router(drivers.router, prefix="/drivers", tags=["Drivers"])

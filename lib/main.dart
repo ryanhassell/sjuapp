@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sjuapp/login_page.dart';
 import 'package:sjuapp/ride_request_page.dart';
 import 'dart:convert';
 import 'package:sjuapp/profile_page.dart';
 import 'package:sjuapp/trip_history.dart';
-import 'api_keys.dart';
+import 'global_vars.dart';
 import 'current_ride_page.dart';
 
 
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'SJU App Home'),
+      home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
+      // home: LoginPage(), // UNCOMMENT FOR TESTING LOGIN
     );
   }
 }

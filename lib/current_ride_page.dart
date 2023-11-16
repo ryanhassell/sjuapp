@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:sjuapp/trip_history.dart';
 import 'dart:convert';
 
-import 'api_keys.dart';
+import 'global_vars.dart';
 
 class CurrentRidePage extends StatefulWidget {
   final int tripId;
