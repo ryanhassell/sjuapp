@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import 'global_vars.dart';
 
 class User {
@@ -10,6 +9,9 @@ class User {
   final DateTime dateRegistered;
   final String emailAddress;
   final String phoneNumber;
+  final String sjuId;
+  final String password;
+  final bool authenticated;
 
   User({
     required this.id,
@@ -18,6 +20,9 @@ class User {
     required this.dateRegistered,
     required this.emailAddress,
     required this.phoneNumber,
+    required this.sjuId,
+    required this.password,
+    required this.authenticated,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -28,13 +33,14 @@ class User {
       dateRegistered: DateTime.parse(json['date_registered']),
       emailAddress: json['email_address'],
       phoneNumber: json['phone_number'],
+      sjuId: json['sju_id'],
+      password: json['password'],
+      authenticated: json['authenticated'],
     );
   }
-  // Replace with the actual endpoint URL
-  final userEndpoint = Uri.parse('http://'+ip+'/user/yourUserIdHere');
 
-  Future<User> fetchUserData() async {
-    final response = await http.get(userEndpoint);
+  static Future<User> fetchUserData(int userId) async {
+    final response = await http.get(Uri.parse('http://$ip/user/$userId'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -44,4 +50,30 @@ class User {
     }
   }
 
+  static Future<void> registerUser(User newUser) async {
+    final url = Uri.parse('http://$ip/register'); // Update with your registration endpoint
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      body: json.encode(newUser.toJson()),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to register user');
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'date_registered': dateRegistered.toIso8601String(),
+      'email_address': emailAddress,
+      'phone_number': phoneNumber,
+      'sju_id': sjuId,
+      'password': password,
+      'authenticated': authenticated,
+    };
+  }
 }
