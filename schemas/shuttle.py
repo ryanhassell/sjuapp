@@ -32,7 +32,6 @@ class ShuttleCreate(BaseModel):
     shuttle_status: str
 
 
-
 class ShuttleUpdate(BaseModel):
     shuttle_direction: ShuttleDirectionEnum
     arrival_time: datetime
