@@ -5,9 +5,11 @@ import 'package:sjuapp/registration_page.dart';
 import 'package:sjuapp/ride_request_page.dart';
 import 'dart:convert';
 import 'package:sjuapp/profile_page.dart';
+import 'package:sjuapp/shuttle_schedule.dart';
 import 'package:sjuapp/trip_history.dart';
 import 'global_vars.dart';
 import 'current_ride_page.dart';
+import 'shuttle_schedule.dart';
 
 
 void main() {
@@ -28,8 +30,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      // home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
-      home: RegistrationPage(), // UNCOMMENT FOR TESTING LOGIN
+       home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
+      //home: RegistrationPage(), // UNCOMMENT FOR TESTING LOGIN
     );
   }
 }
@@ -170,6 +172,8 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icons.directions_bus,
               label: 'View Shuttle Schedules',
               onPressed: () {
+                Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => ShuttleSchedulePage()));
                 // Handle "View Shuttle Schedules" button press
               },
             ),
