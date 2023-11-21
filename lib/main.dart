@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      // home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
-      home: RegistrationPage(), // UNCOMMENT FOR TESTING LOGIN
+       home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
+      //home: RegistrationPage(), // UNCOMMENT FOR TESTING LOGIN
     );
   }
 }
