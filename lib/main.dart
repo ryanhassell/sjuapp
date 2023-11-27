@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:sjuapp/profile_page.dart';
 import 'package:sjuapp/shuttle_schedule.dart';
 import 'package:sjuapp/trip_history.dart';
+import 'package:sjuapp/user.dart';
 import 'global_vars.dart';
 import 'current_ride_page.dart';
 import 'shuttle_schedule.dart';
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-       home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
-      //home: RegistrationPage(), // UNCOMMENT FOR TESTING LOGIN
+       // home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
+      home: LoginPage(), // UNCOMMENT FOR TESTING LOGIN
     );
   }
 }
@@ -45,7 +46,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+
 class _MyHomePageState extends State<MyHomePage> {
+  late Future<User> _userFuture = fetchUserData();
 
   void fetchTripsByUser(int userId) async {
     final url = Uri.parse('http://'+ip+'/trips/by-user/$userId');
@@ -96,6 +99,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<User> fetchUserData() async {
+    // Replace with the actual user ID and endpoint URL
+    final userId = current_user_id; // Example user ID
+    final url = Uri.parse('http://'+ip+'/users/$userId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return User.fromJson(data);
+    } else {
+      throw Exception('Failed to load user data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,21 +122,33 @@ class _MyHomePageState extends State<MyHomePage> {
           alignment: Alignment.centerLeft,
           child: Row(
             children: [
-              Icon(Icons.home, size: 40, color: Colors.white),
-              SizedBox(width: 8),
-              // Apply a translation to move the text down
-              Transform.translate(
-                offset: Offset(0, 4), // Adjust the vertical offset as needed
-                child: Text(
-                  'Home',
-                  style: TextStyle(
-                    fontSize: 29,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
+            FutureBuilder<User>(
+            future: _userFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                return Row(
+                  children: [
+                    Text(
+                      'Welcome, ${snapshot.data!.firstName}',
+                      style: TextStyle(
+                        fontSize: 25, // Increased font size
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white, // Changed text color to white
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                  ],
+                );
+              } else {
+                return Text('404: No User Found'); // Handle the case where there's no user data
+              }
+            },
+          ),
+          ]
           ),
         ),
         actions: [
@@ -144,9 +172,9 @@ class _MyHomePageState extends State<MyHomePage> {
       colorFilter: ColorFilter.mode(
         Colors.white.withOpacity(0.33), // Adjust the opacity as needed
         BlendMode.dstATop,
-      ),
-    ),
-    ),
+                ),
+            ),
+        ),
     ),
        Padding(
         padding: const EdgeInsets.all(16.0),
