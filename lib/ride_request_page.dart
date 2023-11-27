@@ -234,7 +234,11 @@ class _RideRequestPageState extends State<RideRequestPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _submitRequest,
-              child: Text('Submit Ride Request'),
+                child: Text('Submit Ride Request'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red[700],
+                onPrimary: Colors.white,
+              )
             ),
           ],
         ),

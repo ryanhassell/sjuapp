@@ -118,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: ElevatedButton(
           onPressed: signOut,
           style: ElevatedButton.styleFrom(
-            primary: Colors.red,
+            primary: Colors.red[700],
             onPrimary: Colors.white,
           ),
           child: Padding(
