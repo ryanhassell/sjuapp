@@ -15,7 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   postgres: ^2.4.3
   http: ^0.13.3
-  google_maps_flutter_ios: ^2.3.2
+  google_maps_flutter: ^2.5.0
   google_maps_flutter_web: ^0.5.4+2
   universal_platform: ^1.0.0+1
   intl: ^0.18.1

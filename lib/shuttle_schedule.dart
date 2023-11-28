@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // Import http package
 import 'dart:convert'; // Import for JSON handling
 import 'global_vars.dart';
-import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ShuttleSchedulePage extends StatelessWidget {
   @override
@@ -146,7 +146,7 @@ class _ShuttleMapState extends State<ShuttleMap> {
 
   @override
   Widget build(BuildContext context) {
-    GoogleMap(
+    return GoogleMap(
       onMapCreated: _onMapCreated,
       initialCameraPosition: CameraPosition(
         target: LatLng(39.9951, -75.2399), // Initial map location (Hawk Hill Campus)
