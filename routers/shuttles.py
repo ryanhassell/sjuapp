@@ -108,3 +108,5 @@ async def get_shuttle_type(shuttle_id: int, db: Session = Depends(get_db)):
         "type": shuttle.shuttle_type
     }
     return shuttle_type
+
+
