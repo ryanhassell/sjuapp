@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Import http package
+import 'dart:convert'; // Import for JSON handling
+import 'global_vars.dart';
+
 
 class ShuttleSchedulePage extends StatelessWidget {
   @override
@@ -10,29 +14,49 @@ class ShuttleSchedulePage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(16.0),
         children: [
-          ShuttleTile(shuttleType: 'East', shuttleStatus: 'Online'), // Replace with actual status
+          ShuttleTile(shuttleType: 'East', shuttleId: 1), // Replace with actual shuttle ID
           SizedBox(height: 16),
-          ShuttleTile(shuttleType: 'West', shuttleStatus: 'Offline'), // Replace with actual status
+          ShuttleTile(shuttleType: 'West', shuttleId: 2), // Replace with actual shuttle ID
         ],
       ),
     );
   }
 }
 
-class ShuttleTile extends StatelessWidget {
+class ShuttleTile extends StatefulWidget {
   final String shuttleType;
-  final String shuttleStatus;
+  final int shuttleId;
 
   const ShuttleTile({
     Key? key,
     required this.shuttleType,
-    required this.shuttleStatus,
+    required this.shuttleId,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  _ShuttleTileState createState() => _ShuttleTileState();
+}
 
-    String scheduleInfo = shuttleType == 'East'
+class _ShuttleTileState extends State<ShuttleTile> {
+  late Future<String> _shuttleStatus; // Future for fetching shuttle status
+
+  @override
+  void initState() {
+    super.initState();
+    _shuttleStatus = fetchShuttleStatus(widget.shuttleId);
+  }
+
+  Future<String> fetchShuttleStatus(int shuttleId) async {
+    final response = await http.get(Uri.parse('http://'+ip+'/$shuttleId/status'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['status'] as String;
+    } else {
+      throw Exception('Failed to load shuttle status');
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    final scheduleInfo = widget.shuttleType == 'East'
         ? 'The East Shuttle runs continuous loops between Main Campus and the Presidential City Apartments (3900 City Avenue) during the following hours: '
         '\n\nMonday-Friday –  7:20 a.m.-10:50 p.m.\nSaturday and Sunday – 10:20 a.m.-10:50 p.m.\n\nStops:\nMandeville Hall\n50th and City Avenue'
         '\n47th & City Avenue (City Ave North of 47th Street)\nTarget Shopping Center (City Ave North of Monument)\nPresidential/Lincoln Green (Stop is at Lincoln Green)'
@@ -42,72 +66,81 @@ class ShuttleTile extends StatelessWidget {
         '\n\nMonday-Friday: \nShuttle 1: 8:00 a.m.-3:15 p.m.\nShuttle 2: 7:15 a.m.-10:50 p.m.\n\nSaturday-Sunday:\n10:20 a.m.-10:50 p.m.'
         '\n\nStops:\nMandeville Hall\nCardinal Avenue Entrance Gate\nMerion Gardens\nOverbrook and City (Septa Stop)\nCardinal Avenue (Septa Stop)';
 
-
     return Card(
       elevation: 4,
       child: Container(
-        color: shuttleType == 'East'
-            ? shuttleStatus == 'Online' ? Colors.red.withOpacity(0.7) : Colors.red.withOpacity(0.1)
-            : shuttleStatus == 'Online' ? Colors.red.withOpacity(0.7) : Colors.red.withOpacity(0.1),
-        child: ExpansionTile(
-          leading: Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: shuttleStatus == 'Online' ? Colors.green : Colors.grey,
-            ),
-          ),
-          title: Text(
-            '$shuttleType Shuttle',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text('Status: $shuttleStatus'),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        color: Colors.red.withOpacity(0.1), // Default color, change based on status
+        child: FutureBuilder<String>(
+          future: _shuttleStatus,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Loading indicator while fetching status
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final shuttleStatus = snapshot.data ?? 'Unknown';
+              return ExpansionTile(
+                leading: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: shuttleStatus == 'Online' ? Colors.green : Colors.grey,
+                  ),
+                ),
+                title: Text(
+                  '${widget.shuttleType} Shuttle',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text('Status: $shuttleStatus'),
                 children: [
-                  Text(
-                    'General Schedule:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    scheduleInfo,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to a page to track this shuttle
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ShuttleTrackingPage(shuttleType: shuttleType)),
-                      );
-                    },
-                    child: Center(
-                      child: Text(
-                        'Track this shuttle',
-                        style: TextStyle(
-                          color: shuttleStatus == 'Online' ? Colors.black : Colors.white.withOpacity(0.6),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'General Schedule:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: shuttleStatus == 'Online' ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.8),
+                        SizedBox(height: 8),
+                        Text(
+                          scheduleInfo,
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ShuttleTrackingPage(shuttleType: widget.shuttleType)),
+                            );
+                          },
+                          child: Center(
+                            child: Text(
+                              'Track this shuttle',
+                              style: TextStyle(
+                                color: shuttleStatus == 'Online' ? Colors.black : Colors.white.withOpacity(0.6),
+                              ),
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: shuttleStatus == 'Online' ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ),
-          ],
+              );
+            }
+          },
         ),
       ),
     );
   }
 }
+
 
 class ShuttleTrackingPage extends StatelessWidget {
   final String shuttleType;
@@ -130,4 +163,5 @@ class ShuttleTrackingPage extends StatelessWidget {
     );
   }
 }
+
 

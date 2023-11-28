@@ -67,6 +67,7 @@ class Shuttle(Base):
     current_location_latitude = Column(Double)
     current_location_longitude = Column(Double)
     shuttle_type = Column(String)  # type of vehicle
+    shuttle_status = Column(String)
 
 
 class Driver(Base):
