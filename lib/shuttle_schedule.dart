@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; // Import http package
 import 'dart:convert'; // Import for JSON handling
+import 'global_vars.dart';
+
 
 class ShuttleSchedulePage extends StatelessWidget {
   @override
@@ -45,7 +47,7 @@ class _ShuttleTileState extends State<ShuttleTile> {
   }
 
   Future<String> fetchShuttleStatus(int shuttleId) async {
-    final response = await http.get(Uri.parse('YOUR_BACKEND_URL/$shuttleId/status'));
+    final response = await http.get(Uri.parse('http://'+ip+'/$shuttleId/status'));
     if (response.statusCode == 200) {
       return json.decode(response.body)['status'] as String;
     } else {
