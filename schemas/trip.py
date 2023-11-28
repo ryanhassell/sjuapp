@@ -12,6 +12,7 @@ class TripTypeEnum(str, Enum):
 class TripStatusEnum(str, Enum):
     current = "current"
     completed = "completed"
+    no_driver = "no_driver"
 
 
 class TripResponse(BaseModel):

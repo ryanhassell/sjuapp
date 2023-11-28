@@ -127,3 +127,10 @@ async def list_trips_by_driver(user_id: int, skip: int = 0, limit: int = 10, db:
     trips = db.query(Trip).filter(Trip.driver == user_id, Trip.trip_status == 'current').offset(skip).limit(
         limit).first()
     return trips
+
+@router.get("/no-drivers", response_model=List[TripResponse])
+async def list_trips_with_no_driver(db: Session = Depends(get_db)):
+    # Use SQLAlchemy query to fetch trips with a certain passenger
+    trips = db.query(Trip).filter(Trip.trip_status == 'no_driver')
+    return trips
+
