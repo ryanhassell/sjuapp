@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'global_vars.dart';
+import 'login_page.dart';
 import 'user.dart'; // Your user model
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -18,10 +20,22 @@ class _ProfilePageState extends State<ProfilePage> {
     _userFuture = fetchUserData();
   }
 
+  void signOut() {
+    // Set current_user_id to -1
+    current_user_id = -1;
+
+    // Navigate to the login page
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false, // Remove all routes from the stack
+    );
+  }
+
   Future<User> fetchUserData() async {
     // Replace with the actual user ID and endpoint URL
-    final userId = 1; // Example user ID
-    final url = Uri.parse('http://'+ip+'/users/$userId');
+    final userId = current_user_id; // Example user ID
+    final url = Uri.parse('http://' + ip + '/users/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -57,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text('Profile'),
       ),
+
       body: FutureBuilder<User>(
         future: _userFuture,
         builder: (context, snapshot) {
@@ -72,11 +87,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     ListTile(
                       title: buildTitle('Name'),
-                      subtitle: buildSubtitle('${snapshot.data!.firstName} ${snapshot.data!.lastName}'),
+                      subtitle: buildSubtitle('${snapshot.data!
+                          .firstName} ${snapshot.data!.lastName}'),
                     ),
                     ListTile(
                       title: buildTitle('Date Registered'),
-                      subtitle: buildSubtitle('${snapshot.data!.dateRegistered.month}/${snapshot.data!.dateRegistered.day}/${snapshot.data!.dateRegistered.year}'),
+                      subtitle: buildSubtitle('${snapshot.data!.dateRegistered
+                          .month}/${snapshot.data!.dateRegistered
+                          .day}/${snapshot.data!.dateRegistered.year}'),
                     ),
                     ListTile(
                       title: buildTitle('Email Address'),
@@ -94,6 +112,23 @@ class _ProfilePageState extends State<ProfilePage> {
             return Center(child: Text("No user data available"));
           }
         },
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: signOut,
+          style: ElevatedButton.styleFrom(
+            primary: Colors.red[700],
+            onPrimary: Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Sign Out',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ),
       ),
     );
   }

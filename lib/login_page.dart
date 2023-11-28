@@ -1,110 +1,136 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'driver_login_page.dart';
-import 'student_login_page.dart';
+import 'package:http/http.dart' as http;
+import 'package:sjuapp/registration_page.dart';
+
+import 'global_vars.dart';
+import 'main.dart';
 
 class LoginPage extends StatelessWidget {
+  final TextEditingController sjuidController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: Text(
-                  "I'm a...",
-                  style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
+      appBar: AppBar(
+          automaticallyImplyLeading: false
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                'Login',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-            Expanded(
-              flex: 5,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => DriverLoginPage()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.red[700],
-                          onPrimary: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          minimumSize: Size(double.infinity, 0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.directions_car,
-                                size: 60,
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                'Driver',
-                                style: TextStyle(fontSize: 24),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+              SizedBox(height: 30),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(),
+                ),
+                child: TextField(
+                  controller: sjuidController,
+                  decoration: InputDecoration(
+                    labelText: 'SJU ID',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => StudentLoginPage()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.red[700],
-                          onPrimary: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          minimumSize: Size(double.infinity, 0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.school,
-                                size: 60,
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                'Student',
-                                style: TextStyle(fontSize: 24),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  border: Border.all(),
+                ),
+                child: TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  obscureText: true,
+                ),
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () async {
+                  final sjuid = sjuidController.text;
+                  final password = passwordController.text;
+                  final url = 'http://$ip/users/login/$sjuid/$password';
+
+                  final response = await http.get(Uri.parse(url));
+                  if (response.statusCode == 200) {
+                    final jsonResponse = json.decode(response.body);
+                    final userId = jsonResponse['id'] as int;
+
+                    // Set current_user directly to the user ID
+                    print(userId);
+                    current_user_id = userId;
+                    print(current_user_id);
+
+                    // Navigate to the main page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyHomePage(title: "Home"),
+                      ),
+                    );
+                  } else {
+                    // Handle unsuccessful login
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red[700],
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Login',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegistrationPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red[700],
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Register',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
