@@ -84,3 +84,18 @@ async def update_shuttle(shuttle_id: int, shuttle_data: ShuttleUpdate, db: Sessi
         return shuttle_to_update
     else:
         raise HTTPException(status_code=404, detail=f"Shuttle with ID {shuttle_id} not found")
+
+@router.get("/{shuttle_id}/status", response_model=dict)
+async def get_shuttle_status(shuttle_id: int, db: Session = Depends(get_db)):
+    shuttle = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
+    if shuttle is None:
+        raise HTTPException(status_code=404, detail="Shuttle not found")
+
+    shuttle_status = {
+        "shuttle_id": shuttle.id,
+        "status": shuttle.shuttle_status
+    }
+    return shuttle_status
+
+
+
