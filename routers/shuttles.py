@@ -97,5 +97,16 @@ async def get_shuttle_status(shuttle_id: int, db: Session = Depends(get_db)):
     }
     return shuttle_status
 
+@router.get("/{shuttle_id}/type", response_model=dict)
+async def get_shuttle_type(shuttle_id: int, db: Session = Depends(get_db)):
+    shuttle = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
+    if shuttle is None:
+        raise HTTPException(status_code=404, detail="Shuttle not found")
+
+    shuttle_type = {
+        "shuttle_id": shuttle.id,
+        "type": shuttle.shuttle_type
+    }
+    return shuttle_type
 
 
