@@ -41,3 +41,5 @@ class ShuttleUpdate(BaseModel):
     shuttle_type: str
     shuttle_status: str
 
+
+
