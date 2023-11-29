@@ -114,55 +114,52 @@ class ShuttleTile extends StatelessWidget {
 }
 
 
-class ShuttleTrackingPage extends StatelessWidget {
+class ShuttleTrackingPage extends StatefulWidget {
   final String shuttleType;
 
   const ShuttleTrackingPage({Key? key, required this.shuttleType}) : super(key: key);
 
   @override
+  _ShuttleTrackingPageState createState() => _ShuttleTrackingPageState();
+}
+
+class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
+  GoogleMapController? _mapController;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Track $shuttleType Shuttle'),
+        title: Text('Track ${widget.shuttleType} Shuttle'),
       ),
-      body: ShuttleMap(), // Replaced the Center widget with ShuttleMap
-    );
-  }
-}
-
-class ShuttleMap extends StatefulWidget {
-  @override
-  _ShuttleMapState createState() => _ShuttleMapState();
-}
-
-class _ShuttleMapState extends State<ShuttleMap> {
-  GoogleMapController? mapController;
-
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      mapController = controller;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GoogleMap(
-      onMapCreated: _onMapCreated,
-      initialCameraPosition: CameraPosition(
-        target: LatLng(39.9951, -75.2399), // Initial map location (Hawk Hill Campus)
-        zoom: 12, // Initial zoom level
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(39.9951, 75.2399), // Replace with your campus coordinates
+          zoom: 15,
+        ),
+        onMapCreated: (controller) {
+          setState(() {
+            _mapController = controller;
+            // Perform any actions when the map is ready
+          });
+        },
+        markers: _buildMarkers(), // Create shuttle markers here
       ),
-      markers: _createMarkers(),
     );
   }
 
-  Set<Marker> _createMarkers() {
-    return <Marker>{
+  Set<Marker> _buildMarkers() {
+    // Logic to create shuttle markers based on the shuttle's location
+    // You'll need to determine the shuttle's coordinates and update the markers accordingly
+    // For example:
+    return <Marker>[
       Marker(
         markerId: MarkerId('shuttleMarker'),
-        position: LatLng(39.9951, -75.2399), // Shuttle's current position (example coordinates)
+        position: LatLng(39.9951, 75.2399), // Replace with actual coordinates
         infoWindow: InfoWindow(title: 'Shuttle Location'),
+        // Add more properties if needed
       ),
-    };
+      // Add more markers for stops, etc., if required
+    ].toSet();
   }
 }
