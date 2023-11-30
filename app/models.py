@@ -64,8 +64,8 @@ class Shuttle(Base):
     shuttle_direction = Column(Enum(ShuttleDirectionEnum, name='shuttle_direction'))
     arrival_time = Column(DateTime)
     departure_time = Column(DateTime)
-    current_location_latitude = Column(Double)
-    current_location_longitude = Column(Double)
+    current_location_latitude = Column(Float)
+    current_location_longitude = Column(Float)
     shuttle_type = Column(String)  # type of vehicle
     shuttle_status = Column(String)
 
