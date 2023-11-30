@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // Import http package
-import 'dart:convert'; // Import for JSON handling
-import 'global_vars.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ShuttleSchedulePage extends StatelessWidget {
@@ -134,32 +131,32 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(39.9951, 75.2399), // Replace with your campus coordinates
+          target: LatLng(39.9951, -75.2399), // Replace with your campus coordinates
           zoom: 15,
         ),
-        onMapCreated: (controller) {
-          setState(() {
-            _mapController = controller;
-            // Perform any actions when the map is ready
-          });
-        },
-        markers: _buildMarkers(), // Create shuttle markers here
+         onMapCreated: (controller) {
+           setState(() {
+             _mapController = controller;
+             // Perform any actions when the map is ready
+           });
+         },
+         markers: _buildMarkers(), // Create shuttle markers here
       ),
     );
   }
 
-  Set<Marker> _buildMarkers() {
-    // Logic to create shuttle markers based on the shuttle's location
-    // You'll need to determine the shuttle's coordinates and update the markers accordingly
-    // For example:
-    return <Marker>[
-      Marker(
-        markerId: MarkerId('shuttleMarker'),
-        position: LatLng(39.9951, 75.2399), // Replace with actual coordinates
-        infoWindow: InfoWindow(title: 'Shuttle Location'),
-        // Add more properties if needed
-      ),
-      // Add more markers for stops, etc., if required
-    ].toSet();
-  }
+   Set<Marker> _buildMarkers() {
+     // Logic to create shuttle markers based on the shuttle's location
+     // You'll need to determine the shuttle's coordinates and update the markers accordingly
+     // For example:
+     return <Marker>[
+       Marker(
+         markerId: MarkerId('shuttleMarker'),
+         position: LatLng(39.9951, -75.2399), // Replace with actual coordinates
+         infoWindow: InfoWindow(title: 'Shuttle Location'),
+         // Add more properties if needed
+       ),
+       // Add more markers for stops, etc., if required
+     ].toSet();
+   }
 }
