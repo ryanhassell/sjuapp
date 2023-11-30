@@ -85,7 +85,9 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=UserResponse)
-async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)):
+async def update_user(
+    user_id: int, user_data: UserUpdate, db: Session = Depends(get_db)
+):
     # Retrieve the User object by its ID
     user_to_update = db.query(User).filter(User.id == user_id).first()
 
@@ -103,13 +105,15 @@ async def update_user(user_id: int, user_data: UserUpdate, db: Session = Depends
 
 @router.get("/drivers/", response_model=list[UserResponse])
 async def list_drivers(db: Session = Depends(get_db)):
-    drivers = db.query(User).filter(User.user_type == 'driver').all()
+    drivers = db.query(User).filter(User.user_type == "driver").all()
     return drivers
 
 
 @router.get("/login/{sju_id}/{password}", response_model=UserResponse)
 async def user_login(sju_id: str, password: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.sju_id == sju_id, User.password == password).first()
+    user = (
+        db.query(User).filter(User.sju_id == sju_id, User.password == password).first()
+    )
     user.authenticated = True
     db.add(user)
     db.commit()

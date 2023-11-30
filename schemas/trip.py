@@ -45,15 +45,15 @@ class TripCreate(BaseModel):
 
 
 class TripUpdate(BaseModel):
-    start_location_latitude: float
-    start_location_longitude: float
-    end_location_latitude: float
-    end_location_longitude: float
-    driver: int
-    passengers: List[int]
-    trip_type: TripTypeEnum
-    trip_status: TripStatusEnum
-    date_requested: datetime
+    start_location_latitude: float | None
+    start_location_longitude: float | None
+    end_location_latitude: float | None
+    end_location_longitude: float | None
+    driver: int | None
+    passengers: List[int] | None
+    trip_type: TripTypeEnum | None
+    trip_status: TripStatusEnum | None
+    date_requested: datetime | None
 
 
 class TripStatusResponse(BaseModel):

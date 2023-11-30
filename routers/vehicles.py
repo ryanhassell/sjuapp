@@ -20,6 +20,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 router = APIRouter()
 
+
 # Dependency to get a database session
 def get_db():
     db = SessionLocal()
@@ -66,11 +67,15 @@ async def delete_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
         db.commit()
         return f"Vehicle {vehicle_id} successfully deleted."
     else:
-        raise HTTPException(status_code=404, detail=f"Vehicle with ID {vehicle_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Vehicle with ID {vehicle_id} not found"
+        )
 
 
 @router.put("/{vehicle_id}", response_model=VehicleResponse)
-async def update_vehicle(vehicle_id: int, vehicle_data: VehicleUpdate, db: Session = Depends(get_db)):
+async def update_vehicle(
+    vehicle_id: int, vehicle_data: VehicleUpdate, db: Session = Depends(get_db)
+):
     # Retrieve the Vehicle object by its ID
     vehicle_to_update = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
 
@@ -83,4 +88,6 @@ async def update_vehicle(vehicle_id: int, vehicle_data: VehicleUpdate, db: Sessi
         db.refresh(vehicle_to_update)
         return vehicle_to_update
     else:
-        raise HTTPException(status_code=404, detail=f"Vehicle with ID {vehicle_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Vehicle with ID {vehicle_id} not found"
+        )
