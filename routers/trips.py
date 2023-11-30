@@ -97,12 +97,7 @@ async def update_trip(
     if trip_to_update:
         # Update the Trip object with the new data
         for field, value in trip_data.dict().items():
-            if value in trip_data or value == 0:
-                break
-            if field in trip_data or field is "string":
-                break
-            else:
-                setattr(trip_to_update, field, value)
+            setattr(trip_to_update, field, value)
 
         db.commit()
         db.refresh(trip_to_update)
