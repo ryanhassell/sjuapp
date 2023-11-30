@@ -89,7 +89,7 @@ class ShuttleTile extends StatelessWidget {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      int shuttleId = shuttleDirection == ShuttleDirection.east ? 1 : 2; // Adjust shuttle IDs
+                      int shuttleId = shuttleDirection == ShuttleDirection.east ? 6 : 3; // Adjust shuttle IDs
                       // Navigate to a page to track this shuttle
                       Navigator.push(
                         context,
@@ -132,13 +132,15 @@ class ShuttleTrackingPage extends StatefulWidget {
 class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
   GoogleMapController? _mapController;
   bool isLoading = false;
+  Set<Marker> _markers = {}; // Store markers in a Set
+  bool _replacedInitialMarker = false;
 
   Future<void> _fetchShuttleLocation(int shuttleId) async {
     setState(() {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://'+ip+'/shuttles/$shuttleId/location');
+    final url = Uri.parse('http://127.0.0.1/shuttles/$shuttleId/location');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -165,7 +167,30 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
         ),
       ),
     );
+
+    if (_replacedInitialMarker) {
+      _markers.removeWhere((marker) => marker.markerId.value == 'shuttle_location');
+    } else {
+      _replacedInitialMarker = true;
+    }
+
+    _markers.add(
+      Marker(
+        markerId: MarkerId('shuttle_location'),
+        position: LatLng(latitude, longitude),
+        infoWindow: InfoWindow(title: 'Shuttle Location', snippet: '($latitude, $longitude)'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ),
+    );
+
+
+    // Update the markers on the map by combining existing markers and new markers
+    setState(() {
+      _markers = _markers;
+    });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,9 +208,10 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
               _fetchShuttleLocation(widget.shuttleId);
             },
             initialCameraPosition: CameraPosition(
-              target: LatLng(0.0, 0.0), // Initial position, will be updated
+              target: LatLng(39.9951, -75.2399),
               zoom: 15.0,
             ),
+            markers: _markers,
           ),
           if (isLoading)
             Center(

@@ -97,6 +97,7 @@ async def get_shuttle_status(shuttle_id: int, db: Session = Depends(get_db)):
     }
     return shuttle_status
 
+
 @router.get("/{shuttle_id}/type", response_model=dict)
 async def get_shuttle_type(shuttle_id: int, db: Session = Depends(get_db)):
     shuttle = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
@@ -109,5 +110,19 @@ async def get_shuttle_type(shuttle_id: int, db: Session = Depends(get_db)):
     }
     return shuttle_type
 
+
+@router.put("/{shuttle_id}/location", response_model=ShuttleResponse)
+async def update_shuttle_location(shuttle_id: int, latitude: float, longitude: float, db: Session = Depends(get_db)):
+    shuttle_to_update = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
+
+    if shuttle_to_update:
+        shuttle_to_update.current_location_latitude = latitude
+        shuttle_to_update.current_location_longitude = longitude
+
+        db.commit()
+        db.refresh(shuttle_to_update)
+        return shuttle_to_update
+    else:
+        raise HTTPException(status_code=404, detail=f"Shuttle with ID {shuttle_id} not found")
 
 
