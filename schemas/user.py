@@ -46,4 +46,3 @@ class UserUpdate(BaseModel):
     sju_id: str
     password: str
     authenticated: bool
-
