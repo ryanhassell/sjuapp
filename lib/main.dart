@@ -184,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icons.history,
               label: 'View Trip History',
               onPressed: () {
-                fetchTripsByUser(1);
+                fetchTripsByUser(current_user_id);
               },
             ),
             const SizedBox(height: 16),
@@ -224,7 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   side: BorderSide(color: Colors.red[900]!),
                 ),
                 onPressed: () async {
-                  int? currentTripId = await fetchCurrentTripId(1); // Replace with actual user ID
+                  int? currentTripId = await fetchCurrentTripId(current_user_id); // Replace with actual user ID
                   if (currentTripId != null) {
                     Navigator.push(
                       context,
