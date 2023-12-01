@@ -16,6 +16,7 @@ class ShuttleResponse(BaseModel):
     current_location_latitude: float
     current_location_longitude: float
     shuttle_type: str
+    shuttle_status: str
 
     class Config:
         arbitrary_types_allowed = True
@@ -28,6 +29,7 @@ class ShuttleCreate(BaseModel):
     current_location_latitude: float
     current_location_longitude: float
     shuttle_type: str
+    shuttle_status: str
 
 
 class ShuttleUpdate(BaseModel):
@@ -37,3 +39,7 @@ class ShuttleUpdate(BaseModel):
     current_location_latitude: float
     current_location_longitude: float
     shuttle_type: str
+    shuttle_status: str
+
+
+

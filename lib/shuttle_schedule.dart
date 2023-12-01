@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ShuttleSchedulePage extends StatelessWidget {
   @override
@@ -109,25 +110,53 @@ class ShuttleTile extends StatelessWidget {
   }
 }
 
-class ShuttleTrackingPage extends StatelessWidget {
+
+class ShuttleTrackingPage extends StatefulWidget {
   final String shuttleType;
 
   const ShuttleTrackingPage({Key? key, required this.shuttleType}) : super(key: key);
 
   @override
+  _ShuttleTrackingPageState createState() => _ShuttleTrackingPageState();
+}
+
+class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
+  GoogleMapController? _mapController;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Track $shuttleType Shuttle'),
+        title: Text('Track ${widget.shuttleType} Shuttle'),
       ),
-      body: Center(
-        child: Text(
-          'Tracking information for $shuttleType Shuttle will be implemented here.',
-          style: TextStyle(fontSize: 18),
-          textAlign: TextAlign.center,
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(39.9951, -75.2399), // Replace with your campus coordinates
+          zoom: 15,
         ),
+         onMapCreated: (controller) {
+           setState(() {
+             _mapController = controller;
+             // Perform any actions when the map is ready
+           });
+         },
+         markers: _buildMarkers(), // Create shuttle markers here
       ),
     );
   }
-}
 
+   Set<Marker> _buildMarkers() {
+     // Logic to create shuttle markers based on the shuttle's location
+     // You'll need to determine the shuttle's coordinates and update the markers accordingly
+     // For example:
+     return <Marker>[
+       Marker(
+         markerId: MarkerId('shuttleMarker'),
+         position: LatLng(39.9951, -75.2399), // Replace with actual coordinates
+         infoWindow: InfoWindow(title: 'Shuttle Location'),
+         // Add more properties if needed
+       ),
+       // Add more markers for stops, etc., if required
+     ].toSet();
+   }
+}
