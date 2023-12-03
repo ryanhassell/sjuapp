@@ -7,6 +7,7 @@ from app.models import Base, Shuttle
 from schemas.shuttle import ShuttleResponse, ShuttleCreate, ShuttleUpdate
 from schemas.shuttle import ShuttleCreate
 
+
 # Define your connection string
 conn_string = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
 engine = create_engine(conn_string)
@@ -126,3 +127,14 @@ async def update_shuttle_location(shuttle_id: int, latitude: float, longitude: f
         raise HTTPException(status_code=404, detail=f"Shuttle with ID {shuttle_id} not found")
 
 
+@router.get("/{shuttle_id}/direction", response_model=dict)
+async def get_shuttle_direction(shuttle_id: int, db: Session = Depends(get_db)):
+    shuttle = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
+    if shuttle is None:
+        raise HTTPException(status_code=404, detail="Shuttle not found")
+
+    shuttle_direction = {
+        "shuttle_id": shuttle.id,
+        "direction": shuttle.shuttle_direction.value  # Accessing the direction enum value
+    }
+    return shuttle_direction
