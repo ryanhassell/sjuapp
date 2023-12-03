@@ -6,6 +6,7 @@ from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Base, Shuttle
 from schemas.shuttle import ShuttleResponse, ShuttleCreate, ShuttleUpdate
 from schemas.shuttle import ShuttleCreate
+from pydantic import BaseModel
 
 
 # Define your connection string
@@ -138,3 +139,29 @@ async def get_shuttle_direction(shuttle_id: int, db: Session = Depends(get_db)):
         "direction": shuttle.shuttle_direction.value  # Accessing the direction enum value
     }
     return shuttle_direction
+
+class ShuttleSchedule(BaseModel):
+    east_shuttle_schedule: str = (
+        "The East Shuttle runs continuous loops between Main Campus and "
+        "the Presidential City Apartments (3900 City Avenue) during the following hours: "
+        "\n\nMonday-Friday –  7:20 a.m.-10:50 p.m.\nSaturday and Sunday – 10:20 a.m.-10:50 p.m."
+        "\n\nStops:\nMandeville Hall\n50th and City Avenue"
+        "\n47th & City Avenue (City Ave North of 47th Street)\nTarget Shopping Center (City Ave North of Monument)"
+        "\nPresidential/Lincoln Green (Stop is at Lincoln Green)"
+        "\nBala Shopping Center (City Ave South of 47th Street)\nBala Ave & City Avenue"
+        "\n\n*Please note that there is a stoppage in service from 10:20 a.m.-1:20 p.m., "
+        "Monday-Friday and from 1:20 p.m.-3:20 p.m. on Saturday and Sunday."
+    )
+
+    west_shuttle_schedule: str = (
+        "The West Shuttle runs continuous loops between Main Campus and Merion Gardens during the following hours: "
+        "\n\nMonday-Friday: \nShuttle 1: 8:00 a.m.-3:15 p.m."
+        "\nShuttle 2: 7:15 a.m.-10:50 p.m.\n\nSaturday-Sunday:\n10:20 a.m.-10:50 p.m."
+        "\n\nStops:\nMandeville Hall\nCardinal Avenue Entrance Gate\nMerion Gardens"
+        "\nOverbrook and City (Septa Stop)\nCardinal Avenue (Septa Stop)"
+    )
+
+
+@router.get("/schedules", response_model=ShuttleSchedule)
+async def get_shuttle_schedules():
+    return ShuttleSchedule()
