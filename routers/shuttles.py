@@ -162,6 +162,20 @@ class ShuttleSchedule(BaseModel):
     )
 
 
-@router.get("/schedules", response_model=ShuttleSchedule)
-async def get_shuttle_schedules():
-    return ShuttleSchedule()
+@router.get("/shuttles/{shuttle_id}/schedules", response_model=ShuttleSchedule)
+async def get_shuttle_schedules(shuttle_id: int, db: Session = Depends(get_db)):
+    # Assuming shuttle schedules are associated with shuttles
+    # Fetch schedules based on shuttle ID from the database
+    # Example implementation:
+    shuttle = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
+    if shuttle is None:
+        raise HTTPException(status_code=404, detail="Shuttle not found")
+
+    # Depending on your schema, retrieve schedules associated with this shuttle
+    # Modify this part based on how schedules are stored in your database
+    # For demonstration, assuming there's a schedule field in the Shuttle model
+    shuttle_schedules = ShuttleSchedule(
+        east_shuttle_schedule=shuttle.east_shuttle_schedule,
+        west_shuttle_schedule=shuttle.west_shuttle_schedule
+    )
+    return shuttle_schedules
