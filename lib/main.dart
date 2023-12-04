@@ -206,14 +206,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Handle "View Shuttle Schedules" button press
               },
             ),
-            const SizedBox(height: 16),
-            _buildMainButton(
-              icon: Icons.directions_car,
-              label: 'Driver Tools',
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => DriverPage()));
+
+            if (userType == "driver")
+              const SizedBox(height: 16),
+              _buildMainButton(
+                icon: Icons.directions_car,
+                label: 'Driver Tools',
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DriverPage()));
                 },
               ),
+
             const Spacer(), // Push everything to the top
             // Current Ride Button at the bottom
             Container(

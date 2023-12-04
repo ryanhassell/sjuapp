@@ -73,11 +73,13 @@ class LoginPage extends StatelessWidget {
                   if (response.statusCode == 200) {
                     final jsonResponse = json.decode(response.body);
                     final userId = jsonResponse['id'] as int;
+                    final type = jsonResponse['user_type'] as String;
 
                     // Set current_user directly to the user ID
                     print(userId);
                     current_user_id = userId;
                     print(current_user_id);
+                    userType = type;
 
                     // Navigate to the main page
                     Navigator.pushReplacement(
