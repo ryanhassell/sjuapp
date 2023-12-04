@@ -11,6 +11,7 @@ import 'package:sjuapp/user.dart';
 import 'global_vars.dart';
 import 'current_ride_page.dart';
 import 'shuttle_schedule.dart';
+import 'driver_page.dart';
 
 
 void main() {
@@ -201,10 +202,18 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'View Shuttle Schedules',
               onPressed: () {
                 Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => ShuttleSchedulePage()));
+                    context, MaterialPageRoute(builder: (context) => ShuttleSchedulePage()));
                 // Handle "View Shuttle Schedules" button press
               },
             ),
+            const SizedBox(height: 16),
+            _buildMainButton(
+              icon: Icons.directions_car,
+              label: 'Driver Tools',
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => DriverPage()));
+                },
+              ),
             const Spacer(), // Push everything to the top
             // Current Ride Button at the bottom
             Container(
