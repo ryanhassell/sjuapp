@@ -7,40 +7,157 @@ import 'global_vars.dart';
 
 enum ShuttleDirection { east, west }
 
-class ShuttleSchedulePage extends StatelessWidget {
+class ShuttleSchedulePage extends StatefulWidget {
+  @override
+  _ShuttleSchedulePageState createState() => _ShuttleSchedulePageState();
+}
+
+class _ShuttleSchedulePageState extends State<ShuttleSchedulePage> {
+  List<Map<String, dynamic>> shuttles = [];
+
+  Future<void> fetchShuttles() async {
+    final response = await http.get(Uri.parse('http://'+ip+'/shuttles'));
+    if (response.statusCode == 200) {
+      setState(() {
+        shuttles = List<Map<String, dynamic>>.from(json.decode(response.body));
+      });
+    } else {
+      // Handle error gracefully
+      print('Failed to fetch shuttle schedules: ${response.statusCode}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Shuttle Schedules'),
       ),
-      body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
-          ShuttleTile(shuttleDirection: ShuttleDirection.east, shuttleStatus: 'Online'), // Replace with actual status
-          SizedBox(height: 16),
-          ShuttleTile(shuttleDirection: ShuttleDirection.west, shuttleStatus: 'Offline'), // Replace with actual status
-        ],
+      body: ListView.builder(
+        itemCount: shuttles.length,
+        itemBuilder: (context, index) {
+          return ShuttleTile(
+            shuttleInfo: shuttles[index], // Pass shuttle information to the tile
+          );
+        },
       ),
     );
   }
 }
 
-class ShuttleTile extends StatelessWidget {
-  final ShuttleDirection shuttleDirection;
-  final String shuttleStatus;
+class ShuttleTile extends StatefulWidget {
+  final Map<String, dynamic> shuttleInfo;
 
   const ShuttleTile({
     Key? key,
-    required this.shuttleDirection,
-    required this.shuttleStatus,
+    required this.shuttleInfo,
   }) : super(key: key);
+
+  @override
+  _ShuttleTileState createState() => _ShuttleTileState();
+}
+
+class _ShuttleTileState extends State<ShuttleTile> {
+  String shuttleStatus = 'Offline';
+  String shuttleDirection = '';
+  String shuttleSchedule = '';
+  double latitude = 0.0;
+  double longitude = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchShuttleStatus(widget.shuttleInfo['id']).then((status) {
+      setState(() {
+        shuttleStatus = status;
+      });
+    });
+    fetchShuttleDirection(widget.shuttleInfo['id']).then((direction) {
+      setState(() {
+        shuttleDirection = direction;
+      });
+    });
+    fetchShuttleSchedule(widget.shuttleInfo['id']).then((schedule) {
+      setState(() {
+        shuttleSchedule = schedule;
+      });
+    });
+    fetchShuttleCoordinates(widget.shuttleInfo['id']).then((coordinates) {
+      setState(() {
+        latitude = coordinates['latitude'];
+        longitude = coordinates['longitude'];
+      });
+    });
+  }
+
+  Future<String> fetchShuttleDirection(int shuttleId) async {
+    try {
+      final response = await http.get(Uri.parse('http://'+ip+'/shuttles/$shuttleId/direction'));
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body)['direction'];
+      } else {
+        throw Exception('Failed to load direction');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return '';
+    }
+  }
+
+
+  Future<String> fetchShuttleStatus(int shuttleId) async {
+    try {
+      final response = await http.get(Uri.parse('http://'+ip+'/shuttles/$shuttleId/status'));
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body)['status'];
+      } else {
+        throw Exception('Failed to load status');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return ''; // Return a default value or handle the error case
+    }
+  }
+
+  Future<String> fetchShuttleSchedule(int shuttleId) async {
+    try {
+      final response = await http.get(Uri.parse('http://'+ip+'/shuttles/$shuttleId/schedule'));
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body)['schedule'];
+      } else {
+        throw Exception('Failed to load schedule');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return '';
+    }
+  }
+
+
+  Future<Map<String, dynamic>> fetchShuttleCoordinates(int shuttleId) async {
+    try {
+      final response = await http.get(Uri.parse('http://'+ip+'/shuttles/$shuttleId/coordinates'));
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load coordinates');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return {};
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
-    String shuttleType = shuttleDirection == ShuttleDirection.east ? 'East' : 'West';
-    String scheduleInfo = shuttleDirection == ShuttleDirection.east
+    String shuttleType = widget.shuttleInfo['shuttle_direction'] == 'east' ? 'East' : 'West';
+    String scheduleInfo = widget.shuttleInfo['shuttle_direction'] == 'east'
         ? 'The East Shuttle runs continuous loops between Main Campus and the Presidential City Apartments (3900 City Avenue) during the following hours: '
         '\n\nMonday-Friday –  7:20 a.m.-10:50 p.m.\nSaturday and Sunday – 10:20 a.m.-10:50 p.m.\n\nStops:\nMandeville Hall\n50th and City Avenue'
         '\n47th & City Avenue (City Ave North of 47th Street)\nTarget Shopping Center (City Ave North of Monument)\nPresidential/Lincoln Green (Stop is at Lincoln Green)'
@@ -54,9 +171,7 @@ class ShuttleTile extends StatelessWidget {
     return Card(
       elevation: 4,
       child: Container(
-        color: shuttleDirection == ShuttleDirection.east
-            ? shuttleStatus == 'Online' ? Colors.red.withOpacity(0.7) : Colors.red.withOpacity(0.1)
-            : shuttleStatus == 'Online' ? Colors.red.withOpacity(0.7) : Colors.red.withOpacity(0.1),
+        color: shuttleStatus == 'Online' ? Colors.red.withOpacity(0.7) : Colors.red.withOpacity(0.1),
         child: ExpansionTile(
           leading: Container(
             width: 12,
@@ -72,43 +187,44 @@ class ShuttleTile extends StatelessWidget {
           ),
           subtitle: Text('Status: $shuttleStatus'),
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'General Schedule:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    scheduleInfo,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      int shuttleId = shuttleDirection == ShuttleDirection.east ? 6 : 3; // Adjust shuttle IDs
-                      // Navigate to a page to track this shuttle
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ShuttleTrackingPage(shuttleId: shuttleId)),
-                      );
-                    },
-                    child: Center(
-                      child: Text(
-                        'Track this shuttle',
-                        style: TextStyle(
-                          color: shuttleStatus == 'Online' ? Colors.black : Colors.white.withOpacity(0.6),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'General Schedule:',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      scheduleInfo,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        int shuttleId = widget.shuttleInfo['id']; // Use the actual shuttle ID
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ShuttleTrackingPage(shuttleId: shuttleId)),
+                        );
+                      },
+                      child: Center(
+                        child: Text(
+                          'Track this shuttle',
+                          style: TextStyle(
+                            color: shuttleStatus == 'Online' ? Colors.black : Colors.white.withOpacity(0.6),
+                          ),
                         ),
                       ),
+                      style: ElevatedButton.styleFrom(
+                        primary: shuttleStatus == 'Online' ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.8),
+                      ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      primary: shuttleStatus == 'Online' ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.8),
-                    ),
-                  ),
-                ],
+                  ],
+               ),
               ),
             ),
           ],
@@ -135,27 +251,24 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
   Set<Marker> _markers = {}; // Store markers in a Set
   bool _replacedInitialMarker = false;
 
-  Future<void> _fetchShuttleLocation(int shuttleId) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final url = Uri.parse('http://127.0.0.1/shuttles/$shuttleId/location');
-    final response = await http.get(url);
-
+  Future<void> fetchShuttleLocation() async {
+    final response =
+    await http.get(Uri.parse('http://'+ip+'/shuttles/${widget.shuttleId}/location'));
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      final double latitude = responseData['latitude'];
-      final double longitude = responseData['longitude'];
+      double latitude = responseData['latitude'];
+      double longitude = responseData['longitude'];
       _updateShuttleMapPosition(latitude, longitude);
     } else {
-      // Handle error or no shuttle location available
+      // Handle error gracefully
       print('Failed to fetch shuttle location: ${response.statusCode}');
     }
+  }
 
-    setState(() {
-      isLoading = false;
-    });
+  @override
+  void initState() {
+    super.initState();
+    fetchShuttleLocation();
   }
 
   void _updateShuttleMapPosition(double latitude, double longitude) {
@@ -183,14 +296,11 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
       ),
     );
 
-
     // Update the markers on the map by combining existing markers and new markers
     setState(() {
-      _markers = _markers;
+      _markers = _markers.toSet();
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +315,7 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
               setState(() {
                 _mapController = controller;
               });
-              _fetchShuttleLocation(widget.shuttleId);
+              fetchShuttleLocation(); // Corrected function call
             },
             initialCameraPosition: CameraPosition(
               target: LatLng(39.9951, -75.2399),
@@ -223,7 +333,7 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
             right: 16.0,
             child: ElevatedButton(
               onPressed: () {
-                _fetchShuttleLocation(widget.shuttleId);
+                fetchShuttleLocation(); // Corrected function call
               },
               child: Text('Refresh Location'),
             ),

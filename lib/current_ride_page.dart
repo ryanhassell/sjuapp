@@ -26,7 +26,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
     _fetchCurrentTrip();
   }
 
-  Future<Trip?> fetchCurrentTrip(int tripId) async {
+  Future<Trip?> fetchCurrentTrip(int tripId) async  {
     final url = Uri.parse('http://'+ip+'/trips/$tripId');
     final response = await http.get(url);
 
