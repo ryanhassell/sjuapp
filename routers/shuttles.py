@@ -7,6 +7,7 @@ from app.models import Base, Shuttle
 from schemas.shuttle import ShuttleResponse, ShuttleCreate, ShuttleUpdate
 from schemas.shuttle import ShuttleCreate
 from pydantic import BaseModel
+from typing import List
 
 
 # Define your connection string
@@ -31,7 +32,7 @@ def get_db():
         db.close()
 
 
-@router.get("/shuttles", response_model=list[ShuttleResponse])
+@router.get("/shuttles", response_model=List[ShuttleResponse])
 async def list_shuttles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch shuttles
     shuttles = db.query(Shuttle).offset(skip).limit(limit).all()
