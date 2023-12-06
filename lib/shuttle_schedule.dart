@@ -29,6 +29,7 @@ class _ShuttleSchedulePageState extends State<ShuttleSchedulePage> {
 
   @override
   Widget build(BuildContext context) {
+    fetchShuttles();
     return Scaffold(
       appBar: AppBar(
         title: Text('Shuttle Schedules'),
@@ -315,7 +316,6 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
               setState(() {
                 _mapController = controller;
               });
-              fetchShuttleLocation(); // Corrected function call
             },
             initialCameraPosition: CameraPosition(
               target: LatLng(39.9951, -75.2399),
