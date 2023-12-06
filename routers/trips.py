@@ -75,7 +75,11 @@ async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
         db.refresh(new_trip)
         return new_trip
     else:
-        return {"message": "No available drivers at the moment"}
+        new_trip.trip_status = "no_driver"
+        db.add(new_trip)
+        db.commit()
+        db.refresh(new_trip)
+        return new_trip
 
 
 @router.delete("/{trip_id}", response_model=str)

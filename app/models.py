@@ -18,7 +18,7 @@ class Trip(Base):
     start_location_longitude = Column(Double)
     end_location_latitude = Column(Double)
     end_location_longitude = Column(Double)
-    driver = Column(Integer)
+    driver = Column(Integer, nullable=True)
     trip_status = Column(Enum(TripStatusEnum, name='trip_status'))
     passengers = Column(ARRAY(Integer))
 
@@ -77,4 +77,3 @@ class Driver(Base):
     available = Column(Boolean)
     current_trip = Column(Integer)
     user = relationship('User', back_populates='driver')
-
