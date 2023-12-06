@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
-from app.models import Trip, Base
-from schemas.trip import TripResponse, TripCreate, TripUpdate, TripStatusResponse
+from app.models import Trip, Base, Driver
+from schemas.trip import TripResponse, TripCreate, TripUpdate, TripStatusResponse, TripCreateResponse
 
 # Define your connection string
 conn_string = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
@@ -55,15 +55,27 @@ async def get_trip(trip_id: int, db: Session = Depends(get_db)):
     return trip
 
 
-@router.post("", response_model=TripResponse)
+@router.post("", response_model=TripCreateResponse)
 async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
     # Create a new trip in the database
     new_trip = Trip(**trip.dict())
-    new_trip.trip_status = "current"
-    db.add(new_trip)
-    db.commit()
-    db.refresh(new_trip)
-    return new_trip
+
+    # Find an available driver
+    assigned_driver = db.query(Driver).filter(Driver.available == True).first()
+    # The above line can also be written as:
+    # assigned_driver = db.query(Driver).filter(Driver.available.is_(True)).first()
+
+    if assigned_driver:
+        new_trip.driver = assigned_driver.id
+        assigned_driver.available = False
+        db.add(assigned_driver)
+        new_trip.trip_status = "current"
+        db.add(new_trip)
+        db.commit()
+        db.refresh(new_trip)
+        return new_trip
+    else:
+        return {"message": "No available drivers at the moment"}
 
 
 @router.delete("/{trip_id}", response_model=str)
@@ -128,9 +140,9 @@ async def list_trips_by_driver(user_id: int, skip: int = 0, limit: int = 10, db:
         limit).first()
     return trips
 
+
 @router.get("/no-drivers", response_model=List[TripResponse])
 async def list_trips_with_no_driver(db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = db.query(Trip).filter(Trip.trip_status == 'no_driver')
     return trips
-
