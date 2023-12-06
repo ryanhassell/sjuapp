@@ -3,6 +3,9 @@ import 'package:sjuapp/global_vars.dart';
 import 'package:sjuapp/user.dart'; // Import your User class
 import 'package:sjuapp/user.dart';
 import 'login_page.dart'; // Repeated import, should be removed
+import 'main.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // Import the dart convert library for JSON handling
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -44,25 +47,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
         try {
           await User.registerUser(newUser);
 
-          // Display a dialog for account creation confirmation
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Success!'),
-                content: Text('Account Created!'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
-                      Navigator.of(context).pop(); // Go back to the previous screen (login page)
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
+          // Log in the user after successful registration
+          final response = await http.get(Uri.parse(
+              'http://$ip/users/login/${newUser.sjuId}/${newUser.password}'));
+          if (response.statusCode == 200) {
+            final jsonResponse = json.decode(response.body);
+            final userId = jsonResponse['id'] as int;
+            final type = jsonResponse['user_type'] as String;
+
+            // Set current_user directly to the user ID and user type
+            current_user_id = userId;
+            userType = type;
+
+            // Navigate to the main page after successful login
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MyHomePage(title: "Home"),
+              ),
+            );
+          } else {
+            // Handle unsuccessful login after registration
+            // You may want to show an error message here if login fails after registration
+          }
         } catch (e) {
           // Handle registration failure
           ScaffoldMessenger.of(context).showSnackBar(
@@ -216,8 +223,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
             return 'Please enter $label'; // Updated error message
           }
           return null;
+
         },
       ),
     );
   }
 }
+
