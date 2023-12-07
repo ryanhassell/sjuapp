@@ -15,10 +15,12 @@ class Trip {
   final double endLocationLongitude;
   final int driver;
   final List<int> passengers;
-  final String dateRequested;
+  final DateTime dateRequested;
   final String tripStatus;
   GoogleMapController? mapController;
   String tripDescription = '';
+  String tripDate = '';
+
 
   Trip({
     required this.id,
@@ -31,8 +33,9 @@ class Trip {
     required this.passengers,
     required this.dateRequested,
     required this.tripStatus,
-    this.mapController, required
-    String tripDescription,
+    this.mapController,
+    required String tripDescription,
+    required String tripDate,
   });
 
   factory Trip.fromJson(Map<String, dynamic> json) {
@@ -45,10 +48,11 @@ class Trip {
       endLocationLongitude: json['end_location_longitude'],
       driver: json['driver'],
       passengers: List<int>.from(json['passengers']),
-      dateRequested: json['date_requested'],
+      dateRequested: DateTime.parse(json['date_requested']),
       tripStatus: json['trip_status'],
       mapController: null, // Initialize with null
       tripDescription: '',
+      tripDate: '',
     );
   }
 }
@@ -66,6 +70,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   GoogleMapController? _mapController;
   List<User> passengers = [];
   String tripDescription = '';
+  String tripDate = '';
   late Future<void> _loadingFuture;
   bool _isPageContentVisible = true;
 
@@ -79,6 +84,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     for (final trip in widget.trips) {
       await fetchPassengers(trip);
       await updateTripDescription(trip);
+      await updateTripDate(trip);
     }
   }
 
@@ -126,6 +132,74 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     // Update the tripDescription field for the specific trip
     setState(() {
       trip.tripDescription = description;
+    });
+  }
+
+  Future<void> updateTripDate(Trip trip) async {
+    var month = '';
+    if(trip.dateRequested.month == 1){
+      month = "January";
+    }
+    if(trip.dateRequested.month == 2){
+      month = "February";
+    }
+    if(trip.dateRequested.month == 3){
+      month = "March";
+    }
+    if(trip.dateRequested.month == 4){
+      month = "April";
+    }
+    if(trip.dateRequested.month == 5){
+      month = "May";
+    }
+    if(trip.dateRequested.month == 6){
+      month = "June";
+    }
+    if(trip.dateRequested.month == 7){
+      month = "July";
+    }
+    if(trip.dateRequested.month == 8){
+      month = "August";
+    }
+    if(trip.dateRequested.month == 9){
+      month = "September";
+    }
+    if(trip.dateRequested.month == 10){
+      month = "October";
+    }
+    if(trip.dateRequested.month == 11){
+      month = "November";
+    }
+    if(trip.dateRequested.month == 12){
+      month = "December";
+    }
+    var weekday = '';
+    //weekday
+    if(trip.dateRequested.weekday == 1){
+      weekday = "Monday";
+    }
+    if(trip.dateRequested.weekday == 2){
+      weekday = "Tuesday";
+    }
+    if(trip.dateRequested.weekday == 3){
+      weekday = "Wednesday";
+    }
+    if(trip.dateRequested.weekday == 4){
+      weekday = "Thursday";
+    }
+    if(trip.dateRequested.weekday == 5){
+      weekday = "Friday";
+    }
+    if(trip.dateRequested.weekday == 6){
+      weekday = "Saturday";
+    }
+    if(trip.dateRequested.weekday == 7){
+      weekday = "Sunday";
+    }
+    final dateString = '$weekday $month ${trip.dateRequested.day}, ${trip.dateRequested.year}';
+    // Update the tripDate field for the specific trip
+    setState(() {
+      trip.tripDate = dateString;
     });
   }
 
@@ -268,8 +342,15 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    '${trip.tripDate}', // Use tripDescription for the specific trip
+                    style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'SquareFont'),
+                  ),
+                  Text(
                     '${trip.tripDescription}', // Use tripDescription for the specific trip
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'SquareFont'),
