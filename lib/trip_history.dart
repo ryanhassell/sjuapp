@@ -485,3 +485,4 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     );
   }
 }
+
