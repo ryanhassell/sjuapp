@@ -345,7 +345,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                     '${trip.tripDate}', // Use tripDescription for the specific trip
                     style: const TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                         fontFamily: 'SquareFont'),
                   ),
                   Text(
