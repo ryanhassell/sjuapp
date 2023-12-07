@@ -21,7 +21,23 @@ class TripResponse(BaseModel):
     start_location_longitude: float
     end_location_latitude: float
     end_location_longitude: float
-    driver: int
+    driver: int | None
+    passengers: List[int]
+    trip_type: TripTypeEnum
+    trip_status: TripStatusEnum
+    date_requested: datetime
+
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
+
+
+class TripCreateResponse(BaseModel):
+    id: int
+    start_location_latitude: float
+    start_location_longitude: float
+    end_location_latitude: float
+    end_location_longitude: float
     passengers: List[int]
     trip_type: TripTypeEnum
     trip_status: TripStatusEnum
@@ -37,7 +53,6 @@ class TripCreate(BaseModel):
     start_location_longitude: float
     end_location_latitude: float
     end_location_longitude: float
-    driver: int
     passengers: List[int]
     trip_type: TripTypeEnum
     trip_status: TripStatusEnum
@@ -49,7 +64,7 @@ class TripUpdate(BaseModel):
     start_location_longitude: float
     end_location_latitude: float
     end_location_longitude: float
-    driver: int
+    driver: int | None
     passengers: List[int]
     trip_type: TripTypeEnum
     trip_status: TripStatusEnum

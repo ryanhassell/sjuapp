@@ -69,7 +69,7 @@ async def create_driver(user_id: int, db: Session = Depends(get_db)):
 
 
 async def auto_create_driver(user_id: int, db: Session = Depends(get_db)):
-    driver_entry = Driver(user_id=user_id)
+    driver_entry = Driver(user_id=user_id, available=True)
     # print(driver_entry.user, driver_entry.user_id)
     db.add(driver_entry)
     db.commit()
