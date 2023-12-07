@@ -40,6 +40,3 @@ class ShuttleUpdate(BaseModel):
     current_location_longitude: float
     shuttle_type: str
     shuttle_status: str
-
-
-

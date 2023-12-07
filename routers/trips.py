@@ -7,7 +7,13 @@ from sqlalchemy.orm import sessionmaker
 
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Trip, Base, Driver
-from schemas.trip import TripResponse, TripCreate, TripUpdate, TripStatusResponse, TripCreateResponse
+from schemas.trip import (
+    TripResponse,
+    TripCreate,
+    TripUpdate,
+    TripStatusResponse,
+    TripCreateResponse,
+)
 
 # Define your connection string
 conn_string = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
@@ -40,9 +46,17 @@ async def list_trips(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
 
 
 @router.get("/by-user/{user_id}", response_model=list[TripResponse])
-async def list_trips_by_passenger_id(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+async def list_trips_by_passenger_id(
+    user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+):
     # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.passengers.any(user_id)).offset(skip).limit(limit).all()
+    trips = (
+        db.query(Trip)
+        .filter(Trip.passengers.any(user_id))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return trips
 
 
@@ -96,7 +110,9 @@ async def delete_trip(trip_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{trip_id}", response_model=TripResponse)
-async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends(get_db)):
+async def update_trip(
+    trip_id: int, trip_data: TripUpdate, db: Session = Depends(get_db)
+):
     # Retrieve the Trip object by its ID
     trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
 
@@ -113,7 +129,9 @@ async def update_trip(trip_id: int, trip_data: TripUpdate, db: Session = Depends
 
 
 @router.put("/{trip_id}/status", response_model=TripStatusResponse)
-async def update_trip_status(trip_id: int, trip_data: TripStatusResponse, db: Session = Depends(get_db)):
+async def update_trip_status(
+    trip_id: int, trip_data: TripStatusResponse, db: Session = Depends(get_db)
+):
     # Retrieve the Trip object by its ID
     trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
 
@@ -130,23 +148,37 @@ async def update_trip_status(trip_id: int, trip_data: TripStatusResponse, db: Se
 
 
 @router.get("/current-trips/{user_id}", response_model=TripResponse)
-async def list_trips_by_passenger_id(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+async def list_trips_by_passenger_id(
+    user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+):
     # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.passengers.any(user_id), Trip.trip_status == 'current').offset(skip).limit(
-        limit).first()
+    trips = (
+        db.query(Trip)
+        .filter(Trip.passengers.any(user_id), Trip.trip_status == "current")
+        .offset(skip)
+        .limit(limit)
+        .first()
+    )
     return trips
 
 
 @router.get("/current-trips-by-driver/{user_id}", response_model=TripResponse)
-async def list_trips_by_driver(user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+async def list_trips_by_driver(
+    user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+):
     # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.driver == user_id, Trip.trip_status == 'current').offset(skip).limit(
-        limit).first()
+    trips = (
+        db.query(Trip)
+        .filter(Trip.driver == user_id, Trip.trip_status == "current")
+        .offset(skip)
+        .limit(limit)
+        .first()
+    )
     return trips
 
 
 @router.get("/no-drivers", response_model=List[TripResponse])
 async def list_trips_with_no_driver(db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.trip_status == 'no_driver')
+    trips = db.query(Trip).filter(Trip.trip_status == "no_driver")
     return trips

@@ -22,6 +22,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 router = APIRouter()
 
+
 # Dependency to get a database session
 def get_db():
     db = SessionLocal()
@@ -68,11 +69,15 @@ async def delete_shuttle(shuttle_id: int, db: Session = Depends(get_db)):
         db.commit()
         return f"Shuttle {shuttle_id} successfully deleted."
     else:
-        raise HTTPException(status_code=404, detail=f"Shuttle with ID {shuttle_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Shuttle with ID {shuttle_id} not found"
+        )
 
 
 @router.put("/{shuttle_id}", response_model=ShuttleResponse)
-async def update_shuttle(shuttle_id: int, shuttle_data: ShuttleUpdate, db: Session = Depends(get_db)):
+async def update_shuttle(
+    shuttle_id: int, shuttle_data: ShuttleUpdate, db: Session = Depends(get_db)
+):
     # Retrieve the Shuttle object by its ID
     shuttle_to_update = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
 
@@ -85,7 +90,10 @@ async def update_shuttle(shuttle_id: int, shuttle_data: ShuttleUpdate, db: Sessi
         db.refresh(shuttle_to_update)
         return shuttle_to_update
     else:
-        raise HTTPException(status_code=404, detail=f"Shuttle with ID {shuttle_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Shuttle with ID {shuttle_id} not found"
+        )
+
 
 @router.get("/{shuttle_id}/status", response_model=dict)
 async def get_shuttle_status(shuttle_id: int, db: Session = Depends(get_db)):
@@ -93,10 +101,7 @@ async def get_shuttle_status(shuttle_id: int, db: Session = Depends(get_db)):
     if shuttle is None:
         raise HTTPException(status_code=404, detail="Shuttle not found")
 
-    shuttle_status = {
-        "shuttle_id": shuttle.id,
-        "status": shuttle.shuttle_status
-    }
+    shuttle_status = {"shuttle_id": shuttle.id, "status": shuttle.shuttle_status}
     return shuttle_status
 
 
@@ -106,15 +111,14 @@ async def get_shuttle_type(shuttle_id: int, db: Session = Depends(get_db)):
     if shuttle is None:
         raise HTTPException(status_code=404, detail="Shuttle not found")
 
-    shuttle_type = {
-        "shuttle_id": shuttle.id,
-        "type": shuttle.shuttle_type
-    }
+    shuttle_type = {"shuttle_id": shuttle.id, "type": shuttle.shuttle_type}
     return shuttle_type
 
 
 @router.put("/{shuttle_id}/location", response_model=ShuttleResponse)
-async def update_shuttle_location(shuttle_id: int, latitude: float, longitude: float, db: Session = Depends(get_db)):
+async def update_shuttle_location(
+    shuttle_id: int, latitude: float, longitude: float, db: Session = Depends(get_db)
+):
     shuttle_to_update = db.query(Shuttle).filter(Shuttle.id == shuttle_id).first()
 
     if shuttle_to_update:
@@ -125,7 +129,9 @@ async def update_shuttle_location(shuttle_id: int, latitude: float, longitude: f
         db.refresh(shuttle_to_update)
         return shuttle_to_update
     else:
-        raise HTTPException(status_code=404, detail=f"Shuttle with ID {shuttle_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Shuttle with ID {shuttle_id} not found"
+        )
 
 
 @router.get("/{shuttle_id}/direction", response_model=dict)
@@ -136,9 +142,10 @@ async def get_shuttle_direction(shuttle_id: int, db: Session = Depends(get_db)):
 
     shuttle_direction = {
         "shuttle_id": shuttle.id,
-        "direction": shuttle.shuttle_direction.value  # Accessing the direction enum value
+        "direction": shuttle.shuttle_direction.value,  # Accessing the direction enum value
     }
     return shuttle_direction
+
 
 class ShuttleSchedule(BaseModel):
     east_shuttle_schedule: str = (
