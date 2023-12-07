@@ -47,5 +47,19 @@
 	<true/>
 	<key>GOOGLE_MAPS_API_KEY</key>
     <string>'AIzaSyBxGK0zOZL2VF3vaikld24WgCdGN5cDSNY'</string>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires access to your location while using the app.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app requires access to your location even when the app is in the background.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app requires access to your location when the app is in use and when it is running in the background.</string>
+
+    <!-- For iOS 14 and later, add these keys -->
+    <key>NSLocationTemporaryUsageDescriptionDictionary</key>
+    <dict>
+        <key>yourPurposeKey</key>
+        <string>This app requires access to your location temporarily.</string>
+    </dict>
 </dict>
 </plist>
