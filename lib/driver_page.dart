@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:location/location.dart'; // Import the Location service
 import 'pickup_ride_page.dart';
 import 'location_service.dart'; // Import the LocationService class
-
 
 class DriverPage extends StatelessWidget {
   final LocationService _locationService = LocationService(); // Initialize LocationService
@@ -23,6 +21,7 @@ class DriverPage extends StatelessWidget {
       ),
     );
   }
+
 
   Future<void> _enableLocationAccess(BuildContext context) async {
     LocationData? locationData = await _locationService.getCurrentLocation();
@@ -66,29 +65,26 @@ class DriverPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildMainButton(
-                label: 'Current Ride Requests',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PickupRidePage()),
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-              _buildMainButton(
-                label: 'Allow Location Access',
-                onPressed: () {
-                  _enableLocationAccess(context); // Call function for location access
-                },
-              ),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildMainButton(
+              label: 'Current Ride Requests',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PickupRidePage()),
+                );
+              },
+            ),
+            SizedBox(height: 20),
+            _buildMainButton(
+              label: 'Allow Location Access',
+              onPressed: () {
+                _enableLocationAccess(context); // Call function for location access
+              },
+            ),
+          ],
         ),
       ),
     );
