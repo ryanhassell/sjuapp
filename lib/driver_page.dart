@@ -4,6 +4,17 @@ import 'pickup_ride_page.dart';
 import 'location_service.dart'; // Import the LocationService class
 
 
+class LocationManager {
+  static double? driverLatitude; // Static variable to store driver's latitude
+  static double? driverLongitude; // Static variable to store driver's longitude
+
+  static void updateDriverLocation(double? latitude, double? longitude) {
+    driverLatitude = latitude;
+    driverLongitude = longitude;
+  }
+}
+
+
 class DriverPage extends StatelessWidget {
   final LocationService _locationService = LocationService(); // Initialize LocationService
 
@@ -27,6 +38,10 @@ class DriverPage extends StatelessWidget {
   Future<void> _enableLocationAccess(BuildContext context) async {
     LocationData? locationData = await _locationService.getCurrentLocation();
     if (locationData != null) {
+      // Save latitude and longitude in the LocationManager
+      LocationManager.updateDriverLocation(
+          locationData.latitude,
+          locationData.longitude,);
       // Location access granted, update UI with location data
       showDialog(
         context: context,
