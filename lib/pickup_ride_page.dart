@@ -34,7 +34,7 @@ class _PickupRidePageState extends State<PickupRidePage> {
   }
 
   Future<List<Trip>> fetchAvailableTrips() async {
-    final url = Uri.parse('http://' + ip + '/trips/available');
+    final url = Uri.parse('http://$ip/trips/available');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -49,17 +49,17 @@ class _PickupRidePageState extends State<PickupRidePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Available Trips'),
+        title: const Text('Available Trips'),
       ),
       body: FutureBuilder<List<Trip>>(
         future: _availableTripsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-            return Center(child: Text('No available trips'));
+            return const Center(child: Text('No available trips'));
           } else if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -68,15 +68,13 @@ class _PickupRidePageState extends State<PickupRidePage> {
                 return ListTile(
                   title: Text('Trip ${trip.id}'),
                   subtitle: Text('${trip.origin} to ${trip.destination}'),
-                  // Add more details if needed
                   onTap: () {
-                    // Handle the tap on a specific trip
                   },
                 );
               },
             );
           } else {
-            return Center(child: Text('404: No Data Found'));
+            return const Center(child: Text('404: No Data Found'));
           }
         },
       ),

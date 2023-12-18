@@ -19,7 +19,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
   final TextEditingController _dropoffController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  final places = GoogleMapsPlaces(apiKey: googleApiKey); // Replace with your API key
+  final places = GoogleMapsPlaces(apiKey: googleApiKey);
   late double _pickupLocationLatitude;
   late double _pickupLocationLongitude;
   late double _dropoffLocationLatitude;
@@ -57,7 +57,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
     // Show the autocomplete places search dialog
     Prediction? p = await PlacesAutocomplete.show(offset: 0, radius:1000, types:[], strictbounds: false, region: "us",
       context: context,
-      apiKey: googleApiKey, // Replace with your API key
+      apiKey: googleApiKey,
       mode: Mode.overlay,
       language: "en",components: [Component(Component.country, "us")]
     );
@@ -96,14 +96,14 @@ class _RideRequestPageState extends State<RideRequestPage> {
         'start_location_longitude': _pickupLocationLongitude,
         'end_location_latitude': _dropoffLocationLatitude,
         'end_location_longitude': _dropoffLocationLongitude,
-        'driver': "5", // Replace with actual driver's name or ID
-        'passengers': [1], // Replace with actual passenger IDs
+        'driver': "5",
+        'passengers': [1],
         'trip_type': "group",
         'trip_status': "current",
-        'date_requested': formattedDate, // Use the formattedDate with 'Z' appended
+        'date_requested': formattedDate,
       };
 
-      final url = Uri.parse('http://'+ip+'/trips');
+      final url = Uri.parse('http://$ip/trips');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -113,7 +113,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ride requested successfully!')),
+          const SnackBar(content: Text('Ride requested successfully!')),
         );
 
         // Assuming responseData contains the trip id of the new ride
@@ -122,7 +122,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
       } else {
         print('Failed to request ride with status code: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to request ride.')),
+          const SnackBar(content: Text('Failed to request ride.')),
         );
       }
     }
@@ -146,12 +146,12 @@ class _RideRequestPageState extends State<RideRequestPage> {
       onTap: () async {
         await _handlePressButton(context, controller, isPickup: isPickup);
       },
-      borderRadius: BorderRadius.circular(30), // Rounded corners for the InkWell effect
+      borderRadius: BorderRadius.circular(30),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(30), // Circular border radius for the bubble effect
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: Colors.grey.shade400,
             width: 1,
@@ -161,7 +161,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
               color: Colors.grey.shade300,
               spreadRadius: 1,
               blurRadius: 3,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -170,7 +170,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
             controller: controller,
             decoration: InputDecoration(
               labelText: labelText,
-              border: InputBorder.none, // Remove the underline border
+              border: InputBorder.none,
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -186,7 +186,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
 
   Widget _buildDateTimeSelector(Widget child) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
         color: Colors.white, //background color
         borderRadius: BorderRadius.circular(30), // Rounded corners
@@ -195,7 +195,7 @@ class _RideRequestPageState extends State<RideRequestPage> {
           BoxShadow(
             color: Colors.grey.shade200,
             blurRadius: 3,
-            offset: Offset(0, 2), // Shadow position
+            offset: const Offset(0, 2), // Shadow position
           ),
         ],
       ),
@@ -207,38 +207,38 @@ class _RideRequestPageState extends State<RideRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Request a Ride'),
+        title: const Text('Request a Ride'),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           children: <Widget>[
             _buildLocationInputField(_pickupController, 'Pickup Location', true),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             _buildLocationInputField(_dropoffController, 'Drop-off Location', false),
             _buildDateTimeSelector(
               ListTile(
                 title: Text('Select Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
-                trailing: Icon(Icons.calendar_today),
+                trailing: const Icon(Icons.calendar_today),
                 onTap: () => _selectDate(context),
               ),
             ),
             _buildDateTimeSelector(
               ListTile(
                 title: Text('Select Time: ${_selectedTime.format(context)}'),
-                trailing: Icon(Icons.access_time),
+                trailing: const Icon(Icons.access_time),
                 onTap: () => _selectTime(context),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _submitRequest,
-                child: Text('Submit Ride Request'),
               style: ElevatedButton.styleFrom(
                 primary: Colors.red[700],
                 onPrimary: Colors.white,
-              )
+              ),
+                child: const Text('Submit Ride Request')
             ),
           ],
         ),

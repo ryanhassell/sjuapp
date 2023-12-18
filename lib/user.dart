@@ -53,7 +53,6 @@ class User {
     }
   }
 
-  // Updated toJson method to match the required structure
   Map<String, dynamic> toJson() {
     return {
       'first_name': firstName,
@@ -69,7 +68,7 @@ class User {
   }
 
   static Future<void> registerUser(User newUser) async {
-    final url = Uri.parse('http://$ip/users'); // Update with your registration endpoint
+    final url = Uri.parse('http://$ip/users');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json; charset=UTF-8'},

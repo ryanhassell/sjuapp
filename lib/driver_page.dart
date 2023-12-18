@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'pickup_ride_page.dart';
-import 'location_service.dart'; // Import the LocationService class
+import 'location_service.dart';
 
 class DriverPage extends StatelessWidget {
   final LocationService _locationService = LocationService(); // Initialize LocationService
@@ -10,7 +10,6 @@ class DriverPage extends StatelessWidget {
       {required String label, required VoidCallback onPressed}) {
     return ElevatedButton(
       onPressed: onPressed,
-      child: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red[700], // Button background color
         foregroundColor: Colors.white, // Text and icon color
@@ -20,6 +19,7 @@ class DriverPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
       ),
+      child: Text(label),
     );
   }
 
@@ -32,7 +32,7 @@ class DriverPage extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Location Data'),
+            title: const Text('Location Data'),
             content: Text('Latitude: ${locationData.latitude}, Longitude: ${locationData.longitude}'),
             actions: [
               TextButton(
@@ -48,7 +48,7 @@ class DriverPage extends StatelessWidget {
     } else {
       // Location access denied or not granted, show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Failed to get location data'),
           duration: Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
@@ -78,11 +78,11 @@ class DriverPage extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildMainButton(
               label: 'Allow Location Access',
               onPressed: () {
-                _enableLocationAccess(context); // Call function for location access
+                _enableLocationAccess(context);
               },
             ),
           ],
