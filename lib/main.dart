@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sjuapp/login_page.dart';
-import 'package:sjuapp/registration_page.dart';
 import 'package:sjuapp/ride_request_page.dart';
 import 'dart:convert';
 import 'package:sjuapp/profile_page.dart';
@@ -10,7 +8,6 @@ import 'package:sjuapp/trip_history.dart';
 import 'package:sjuapp/user.dart';
 import 'global_vars.dart';
 import 'current_ride_page.dart';
-import 'shuttle_schedule.dart';
 import 'driver_page.dart';
 
 void main() {
@@ -86,8 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
       icon: Icon(icon, size: 24),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        primary: Colors.red[700], // Button background color
-        onPrimary: Colors.white, // Text and icon color
+        backgroundColor: Colors.red[700], // Button background color
+        foregroundColor: Colors.white, // Text and icon color
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         textStyle: const TextStyle(fontSize: 18),
         shape: RoundedRectangleBorder(
@@ -148,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       mainButtons.add(
         _buildMainButton(
-          icon: Icons.directions_car,
+          icon: Icons.build,
           label: 'Driver Tools',
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => DriverPage()));
@@ -233,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: const Icon(Icons.car_rental, size: 24),
                     label: const Text('View Active Ride'),
                     style: OutlinedButton.styleFrom(
-                      primary: Colors.red[900], // Text and icon color
+                      foregroundColor: Colors.red[900], // Text and icon color
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       textStyle: const TextStyle(fontSize: 18),

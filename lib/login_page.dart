@@ -93,8 +93,8 @@ class LoginPage extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red[700],
-                  onPrimary: Colors.white,
+                  backgroundColor: Colors.red[700],
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -116,8 +116,8 @@ class LoginPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red[700],
-                  onPrimary: Colors.white,
+                  backgroundColor: Colors.red[700],
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

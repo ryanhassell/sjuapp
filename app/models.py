@@ -87,4 +87,6 @@ class Driver(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     available = Column(Boolean)
     current_trip = Column(Integer)
+    current_location_latitude = Column(Float)
+    current_location_longitude = Column(Float)
     user = relationship("User", back_populates="driver")
