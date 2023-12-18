@@ -121,7 +121,7 @@ async def refresh_drivers(db: Session = Depends(get_db)):
 
 @router.post("/{user_id}/availability/{availability}", response_model=DriverResponse)
 async def change_driver_availability(
-    user_id: int, availability: bool, db: Session = Depends(get_db)
+        user_id: int, availability: bool, db: Session = Depends(get_db)
 ):
     driver = db.query(Driver).filter(Driver.user_id == user_id).first()
     if driver is None:
@@ -135,7 +135,7 @@ async def change_driver_availability(
 
 @router.post("/{user_id}/add-trip/{trip_id}", response_model=DriverResponse)
 async def change_current_trip(
-    user_id: int, trip_id: int, db: Session = Depends(get_db)
+        user_id: int, trip_id: int, db: Session = Depends(get_db)
 ):
     driver = db.query(Driver).filter(Driver.user_id == user_id).first()
     if driver is None:
@@ -153,3 +153,22 @@ async def discover_available_drivers(db: Session = Depends(get_db)):
     if driver is None:
         raise HTTPException(status_code=404, detail="No Drivers are Available")
     return driver
+
+
+@router.put("/{driver_id}/location", response_model=DriverResponse)
+async def update_driver_location(
+        driver_id: int, latitude: float, longitude: float, db: Session = Depends(get_db)
+):
+    driver_to_update = db.query(Driver).filter(Driver.id == driver_id).first()
+
+    if driver_to_update:
+        driver_to_update.current_location_latitude = latitude
+        driver_to_update.current_location_longitude = longitude
+
+        db.commit()
+        db.refresh(driver_to_update)
+        return driver_to_update
+    else:
+        raise HTTPException(
+            status_code=404, detail=f"Driver with ID {driver_id} not found"
+        )
