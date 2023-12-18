@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'pickup_ride_page.dart';
 import 'location_service.dart'; // Import the LocationService class
 
@@ -61,7 +62,7 @@ class DriverPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[900],
-        title: Text('Driver Page'),
+        title: const Text('Driver Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
