@@ -6,14 +6,14 @@ class ShuttleSchedulePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shuttle Schedules'),
+        title: const Text('Shuttle Schedules'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
-          ShuttleTile(shuttleType: 'East', shuttleStatus: 'Online'), // Replace with actual status
+        padding: const EdgeInsets.all(16.0),
+        children: const [
+          ShuttleTile(shuttleType: 'East', shuttleStatus: 'Online'),
           SizedBox(height: 16),
-          ShuttleTile(shuttleType: 'West', shuttleStatus: 'Offline'), // Replace with actual status
+          ShuttleTile(shuttleType: 'West', shuttleStatus: 'Offline'),
         ],
       ),
     );
@@ -61,7 +61,7 @@ class ShuttleTile extends StatelessWidget {
           ),
           title: Text(
             '$shuttleType Shuttle',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text('Status: $shuttleStatus'),
           children: [
@@ -70,16 +70,16 @@ class ShuttleTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  const Text(
                     'General Schedule:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     scheduleInfo,
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       // Navigate to a page to track this shuttle
@@ -88,6 +88,9 @@ class ShuttleTile extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => ShuttleTrackingPage(shuttleType: shuttleType)),
                       );
                     },
+                    style: ElevatedButton.styleFrom(
+                      primary: shuttleStatus == 'Online' ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.8),
+                    ),
                     child: Center(
                       child: Text(
                         'Track this shuttle',
@@ -95,9 +98,6 @@ class ShuttleTile extends StatelessWidget {
                           color: shuttleStatus == 'Online' ? Colors.black : Colors.white.withOpacity(0.6),
                         ),
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: shuttleStatus == 'Online' ? Colors.white.withOpacity(0.9) : Colors.grey.withOpacity(0.8),
                     ),
                   ),
                 ],
@@ -121,7 +121,6 @@ class ShuttleTrackingPage extends StatefulWidget {
 }
 
 class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
-  GoogleMapController? _mapController;
 
   @override
   Widget build(BuildContext context) {
@@ -130,33 +129,26 @@ class _ShuttleTrackingPageState extends State<ShuttleTrackingPage> {
         title: Text('Track ${widget.shuttleType} Shuttle'),
       ),
       body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(39.9951, -75.2399), // Replace with your campus coordinates
+        initialCameraPosition: const CameraPosition(
+          target: LatLng(39.9951, -75.2399),
           zoom: 15,
         ),
          onMapCreated: (controller) {
            setState(() {
-             _mapController = controller;
-             // Perform any actions when the map is ready
            });
          },
-         markers: _buildMarkers(), // Create shuttle markers here
+         markers: _buildMarkers(),
       ),
     );
   }
 
    Set<Marker> _buildMarkers() {
-     // Logic to create shuttle markers based on the shuttle's location
-     // You'll need to determine the shuttle's coordinates and update the markers accordingly
-     // For example:
-     return <Marker>[
-       Marker(
+     return <Marker>{
+       const Marker(
          markerId: MarkerId('shuttleMarker'),
-         position: LatLng(39.9951, -75.2399), // Replace with actual coordinates
+         position: LatLng(39.9951, -75.2399),
          infoWindow: InfoWindow(title: 'Shuttle Location'),
-         // Add more properties if needed
        ),
-       // Add more markers for stops, etc., if required
-     ].toSet();
+     };
    }
 }

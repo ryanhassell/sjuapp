@@ -50,7 +50,7 @@ class Trip {
       passengers: List<int>.from(json['passengers']),
       dateRequested: DateTime.parse(json['date_requested']),
       tripStatus: json['trip_status'],
-      mapController: null, // Initialize with null
+      mapController: null,
       tripDescription: '',
       tripDate: '',
     );
@@ -99,7 +99,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     final List<User> fetchedPassengers = [];
 
     for (final passengerId in passengerIds) {
-      final url = Uri.parse('http://' + ip + '/users/$passengerId');
+      final url = Uri.parse('http://$ip/users/$passengerId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -250,13 +250,13 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Trip History'),
+          title: const Text('Trip History'),
         ),
         body: FutureBuilder(
           future: _loadingFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
@@ -270,7 +270,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
 
   Widget buildPageContent() {
     if (widget.trips.isEmpty) {
-      return Center(child: Text('No trips available'));
+      return const Center(child: Text('No trips available'));
     }
 
     return ListView.builder(
@@ -291,10 +291,9 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
 
     return GestureDetector(
       onTap: () {
-        // Handle trip bubble click here
       },
       child: Card(
-        margin: EdgeInsets.all(16),
+        margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -302,8 +301,8 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
         child: Column(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-              child: Container(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              child: SizedBox(
                 height: 150,
                 width: double.infinity,
                 child: GoogleMap(
@@ -321,16 +320,16 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                   ),
                   markers: {
                     Marker(
-                      markerId: MarkerId('startLocation'),
+                      markerId: const MarkerId('startLocation'),
                       position: LatLng(
                           trip.startLocationLatitude, trip.startLocationLongitude),
-                      infoWindow: InfoWindow(title: 'Start Location'),
+                      infoWindow: const InfoWindow(title: 'Start Location'),
                     ),
                     Marker(
-                      markerId: MarkerId('endLocation'),
+                      markerId: const MarkerId('endLocation'),
                       position: LatLng(
                           trip.endLocationLatitude, trip.endLocationLongitude),
-                      infoWindow: InfoWindow(title: 'End Location'),
+                      infoWindow: const InfoWindow(title: 'End Location'),
                     ),
                   },
                 ),
@@ -342,43 +341,43 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${trip.tripDate}', // Use tripDescription for the specific trip
+                    trip.tripDate,
                     style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'SquareFont'),
                   ),
                   Text(
-                    '${trip.tripDescription}', // Use tripDescription for the specific trip
+                    trip.tripDescription,
                     style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'SquareFont'),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   FutureBuilder(
                     future: fetchDriverInfo(trip.driver),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         return Text(
                             'Error fetching driver info: ${snapshot.error}');
                       } else {
                         final driverInfo = snapshot.data as User;
                         return Container(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.car_rental, color: Colors.green),
-                              SizedBox(width: 8),
+                              const Icon(Icons.car_rental, color: Colors.green),
+                              const SizedBox(width: 8),
                               Text(
                                 'Driver: ${driverInfo.firstName} ${driverInfo.lastName}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold),
                               ),
@@ -388,12 +387,12 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                       }
                     },
                   ),
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 8),
+                  const Text(
                     'Passengers:',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 4.0,
@@ -403,7 +402,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           } else if (snapshot.hasError) {
                             return Text(
                                 'Error fetching passenger info: ${snapshot.error}');
@@ -411,12 +410,11 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                             final passengerInfo = snapshot.data as User;
                             return GestureDetector(
                               onTap: () {
-                                // Handle passenger bubble click here
                               },
                               child: Chip(
                                 label: Text(
                                     '${passengerInfo.firstName} ${passengerInfo.lastName}'),
-                                avatar: Icon(Icons.person),
+                                avatar: const Icon(Icons.person),
                               ),
                             );
                           }
@@ -434,7 +432,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   }
 
   Future<User> fetchPassengerInfo(int passengerId) async {
-    final url = Uri.parse('http://' + ip + '/users/$passengerId');
+    final url = Uri.parse('http://$ip/users/$passengerId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -448,7 +446,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
 
 
   Future<User> fetchDriverInfo(int driverId) async {
-    final url = Uri.parse('http://' + ip + '/users/$driverId');
+    final url = Uri.parse('http://$ip/users/$driverId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -464,7 +462,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       _isPageContentVisible = false;
     });
 
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
