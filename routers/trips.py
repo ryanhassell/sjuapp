@@ -90,6 +90,7 @@ async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
         return new_trip
     else:
         new_trip.trip_status = "no_driver"
+        new_trip.driver = 0
         db.add(new_trip)
         db.commit()
         db.refresh(new_trip)
