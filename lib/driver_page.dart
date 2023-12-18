@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'pickup_ride_page.dart';
 import 'location_service.dart'; // Import the LocationService class
 
