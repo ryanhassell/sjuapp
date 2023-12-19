@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sjuapp/global_vars.dart';
-import 'package:sjuapp/user.dart'; // Import your User class
 import 'package:sjuapp/user.dart';
-import 'login_page.dart'; // Repeated import, should be removed
 import 'main.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // Import the dart convert library for JSON handling
+import 'dart:convert';
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -21,8 +19,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _sjuIdController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String _errorMessage = '';
-  String? _userType; // Declare a variable to store the selected user type
+  String? _userType;
   bool _isStudentPressed = false;
   bool _isDriverPressed = false;
 
@@ -41,7 +38,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           sjuId: _sjuIdController.text,
           password: _passwordController.text,
           authenticated: false,
-          userType: _userType!, // Assign the selected user type
+          userType: _userType!,
         );
 
         try {
@@ -63,17 +60,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => MyHomePage(title: "Home"),
+                builder: (context) => const MyHomePage(title: "Home"),
               ),
             );
           } else {
-            // Handle unsuccessful login after registration
-            // You may want to show an error message here if login fails after registration
           }
         } catch (e) {
           // Handle registration failure
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Failed to register. Please try again.'),
               duration: Duration(seconds: 3),
               behavior: SnackBarBehavior.floating,
@@ -83,7 +78,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       } else {
         // Show error message for no user type selected
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Please select a user type.'),
             duration: Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
@@ -93,7 +88,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     } else {
       // Show error message for invalid information
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Please enter valid information in all fields.'),
           duration: Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
@@ -106,7 +101,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration'),
+        title: const Text('Registration'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -117,27 +112,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'Registration',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField('First Name', _firstNameController),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField('Last Name', _lastNameController),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField('Email Address', _emailController),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField('Phone Number', _phoneController),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField('SJU ID', _sjuIdController),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildTextField('Password', _passwordController, isObscure: true),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -156,7 +151,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: Text('I\'m a Student'),
+                      child: const Text('I\'m a Student'),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -173,11 +168,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: Text('I\'m a Driver'),
+                      child: const Text('I\'m a Driver'),
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitRegistration,
                   style: ElevatedButton.styleFrom(
@@ -187,8 +182,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                     child: Text(
                       'Register',
                       style: TextStyle(fontSize: 20),
@@ -216,11 +211,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
         decoration: InputDecoration(
           labelText: label,
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter $label'; // Updated error message
+            return 'Please enter $label';
           }
           return null;
 

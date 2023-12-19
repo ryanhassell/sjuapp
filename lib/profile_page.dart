@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'global_vars.dart';
 import 'login_page.dart';
-import 'user.dart'; // Your user model
+import 'user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -33,9 +32,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<User> fetchUserData() async {
-    // Replace with the actual user ID and endpoint URL
-    final userId = current_user_id; // Example user ID
-    final url = Uri.parse('http://' + ip + '/users/$userId');
+    final userId = current_user_id;
+    final url = Uri.parse('http://$ip/users/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -49,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget buildTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
+      style: const TextStyle(
         fontWeight: FontWeight.bold,
         color: Colors.black54,
       ),
@@ -59,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget buildSubtitle(String subtitle) {
     return Text(
       subtitle,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
       ),
     );
@@ -69,14 +67,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
       ),
 
       body: FutureBuilder<User>(
         future: _userFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (snapshot.hasData) {
@@ -109,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             );
           } else {
-            return Center(child: Text("No user data available"));
+            return const Center(child: Text("No user data available"));
           }
         },
       ),
@@ -121,8 +119,8 @@ class _ProfilePageState extends State<ProfilePage> {
             primary: Colors.red[700],
             onPrimary: Colors.white,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+          child: const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Sign Out',
               style: TextStyle(fontSize: 20),

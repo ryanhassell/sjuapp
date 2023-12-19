@@ -5,28 +5,28 @@ class LocationService {
 
   Future<LocationData?> getCurrentLocation() async {
     try {
-      bool _serviceEnabled;
-      PermissionStatus _permissionGranted;
-      LocationData? _locationData;
+      bool serviceEnabled;
+      PermissionStatus permissionGranted;
+      LocationData? locationData;
 
-      _serviceEnabled = await _location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await _location.requestService();
-        if (!_serviceEnabled) {
+      serviceEnabled = await _location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await _location.requestService();
+        if (!serviceEnabled) {
           return null;
         }
       }
 
-      _permissionGranted = await _location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await _location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
+      permissionGranted = await _location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await _location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
           return null;
         }
       }
 
-      _locationData = await _location.getLocation();
-      return _locationData;
+      locationData = await _location.getLocation();
+      return locationData;
     } catch (e) {
       // Handle exceptions or errors that might occur during location fetching
       print('Error fetching location: $e');

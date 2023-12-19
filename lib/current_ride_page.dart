@@ -131,7 +131,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   Future<void> cancelTrip() async {
     if (currentTrip == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No current trip to cancel.')),
+        const SnackBar(content: Text('No current trip to cancel.')),
       );
       return;
     }
@@ -145,12 +145,12 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
 
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Trip cancelled successfully!')),
+        const SnackBar(content: Text('Trip cancelled successfully!')),
       );
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to cancel the trip.')),
+        const SnackBar(content: Text('Failed to cancel the trip.')),
       );
     }
 
@@ -163,12 +163,12 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   Widget build(BuildContext context) {
     if (currentTrip == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Current Ride')),
-        body: Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: const Text('Current Ride')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     } else {
       return Scaffold(
-        appBar: AppBar(title: Text('Current Ride')),
+        appBar: AppBar(title: const Text('Current Ride')),
         body: Column(
           children: [
             Expanded(
@@ -189,29 +189,29 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
                 ),
                 markers: {
                   Marker(
-                    markerId: MarkerId("pickup"),
+                    markerId: const MarkerId("pickup"),
                     position: LatLng(
                         currentTrip!.startLocationLatitude,
                         currentTrip!.startLocationLongitude
                     ),
-                    infoWindow: InfoWindow(title: "Pickup Location"),
+                    infoWindow: const InfoWindow(title: "Pickup Location"),
                   ),
                   Marker(
-                    markerId: MarkerId("dropoff"),
+                    markerId: const MarkerId("dropoff"),
                     position: LatLng(
                         currentTrip!.endLocationLatitude,
                         currentTrip!.endLocationLongitude
                     ),
-                    infoWindow: InfoWindow(title: "Dropoff Location"),
+                    infoWindow: const InfoWindow(title: "Dropoff Location"),
                   ),
                 },
               ),
             ),
-            ListTile(
+            const ListTile(
               title: Text('ETA for Driver'),
               subtitle: Text('10 minutes'), // Use actual data
             ),
-            ListTile(
+            const ListTile(
               title: Text('Estimated Trip Time'),
               subtitle: Text('25 minutes'), // Use actual data
             ),
@@ -219,14 +219,14 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: isCancelling ? null : () async { await cancelTrip();},
-                child: isCancelling
-                    ? CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                )
-                    : Text('Cancel Trip'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                 ),
+                child: isCancelling
+                    ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+                    : const Text('Cancel Trip'),
               ),
             ),
           ],

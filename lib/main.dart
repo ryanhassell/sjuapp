@@ -9,6 +9,7 @@ import 'package:sjuapp/user.dart';
 import 'global_vars.dart';
 import 'current_ride_page.dart';
 import 'driver_page.dart';
+import 'login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'sjuapp',
+      title: 'SJU Rideshare',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.red,
@@ -28,8 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'SJU App Home'), // UNCOMMENT TO GO TO HOME PAGE
-      //home: LoginPage(), // UNCOMMENT FOR TESTING LOGIN
+      home: LoginPage(),
     );
   }
 }
@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      // Assuming responseData is a map representing the trip data
       return responseData['id']; // Get the trip ID from the trip data
     }
     return null; // Return null if no current trip ID was found or in case of an error
@@ -96,8 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<User> fetchUserData() async {
-    // Replace with the actual user ID and endpoint URL
-    final userId = current_user_id; // Example user ID
+    final userId = current_user_id;
     final url = Uri.parse('http://$ip/users/$userId');
     final response = await http.get(url);
 
@@ -134,7 +132,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => ShuttleSchedulePage()));
-          // Handle "View Shuttle Schedules" button press
         },
       ),
     ];
@@ -174,16 +171,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         Text(
                           'Welcome, ${snapshot.data!.firstName}',
                           style: const TextStyle(
-                            fontSize: 25, // Increased font size
+                            fontSize: 25,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white, // Changed text color to white
+                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(width: 8),
                       ],
                     );
                   } else {
-                    return const Text('404: No User Found'); // Handle the case where there's no user data
+                    return const Text('404: No User Found');
                   }
                 },
               ),
@@ -202,14 +199,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          // The translucent background image
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: const AssetImage('assets/thwnd.jpg'),
                 fit: BoxFit.contain,
                 colorFilter: ColorFilter.mode(
-                  Colors.white.withOpacity(0.33), // Adjust the opacity as needed
+                  Colors.white.withOpacity(0.33),
                   BlendMode.dstATop,
                 ),
               ),
@@ -230,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: const Icon(Icons.car_rental, size: 24),
                     label: const Text('View Active Ride'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red[900], // Text and icon color
+                      foregroundColor: Colors.red[900],
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       textStyle: const TextStyle(fontSize: 18),
@@ -240,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       side: BorderSide(color: Colors.red[900]!),
                     ),
                     onPressed: () async {
-                      int? currentTripId = await fetchCurrentTripId(current_user_id); // Replace with actual user ID
+                      int? currentTripId = await fetchCurrentTripId(current_user_id);
                       if (currentTripId != null) {
                         Navigator.push(
                           context,
