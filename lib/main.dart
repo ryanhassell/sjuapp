@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sjuapp/ride_request_page.dart';
@@ -45,7 +47,36 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final Future<User> _userFuture = fetchUserData();
+  bool showNotification = false;
+  late Timer _timer;
 
+  @override
+  void initState() {
+    super.initState();
+    checkForNotification();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    const duration = Duration(seconds: 10);
+    _timer = Timer.periodic(duration, (Timer t) {
+      checkForNotification();
+    });
+  }
+
+  Future<void> checkForNotification() async {
+    int? currentTripId = await fetchCurrentTripId(current_user_id);
+    int? currentDriverTripId = await fetchCurrentDriverTrip(current_user_id); // Use the driver's ID
+    setState(() {
+      showNotification = (currentTripId != null && userType == "driver") || currentDriverTripId != null;
+    });
+  }
   void fetchTripsByUser(int userId) async {
     final url = Uri.parse('http://$ip/trips/by-user/$userId');
     final response = await http.get(url);
@@ -65,7 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Request failed with status: ${response.statusCode}');
     }
   }
+  Future<int?> fetchCurrentDriverTrip(int driverId) async {
+    final url = Uri.parse('http://$ip/trips/from-driver-id/$driverId');
+    final response = await http.get(url);
 
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      return responseData['id']; // Get the trip ID from the trip data
+    }
+    return null; // Return null if no current driver trip ID was found or in case of an error
+  }
   Future<int?> fetchCurrentTripId(int userId) async {
     final url = Uri.parse('http://$ip/trips/current-trips/$userId');
     final response = await http.get(url);
@@ -150,7 +190,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[900],
@@ -236,19 +275,43 @@ class _MyHomePageState extends State<MyHomePage> {
                       side: BorderSide(color: Colors.red[900]!),
                     ),
                     onPressed: () async {
-                      int? currentTripId = await fetchCurrentTripId(current_user_id);
-                      if (currentTripId != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CurrentRidePage(tripId: currentTripId),
-                          ),
-                        );
-                      } else {
-                        // Handle the case where there is no current trip ID
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No active ride found')),
-                        );
+                      if(userType=="student") {
+                        int? currentTripId = await fetchCurrentTripId(
+                            current_user_id);
+                        if (currentTripId != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CurrentRidePage(tripId: currentTripId),
+                            ),
+                          );
+                        } else {
+                          // Handle the case where there is no current trip ID
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('No active ride found')),
+                          );
+                        }
+                      }
+                      if(userType=="driver") {
+                        int? currentTripId = await fetchCurrentDriverTrip(
+                            current_user_id);
+                        if (currentTripId != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CurrentRidePage(tripId: currentTripId),
+                            ),
+                          );
+                        } else {
+                          // Handle the case where there is no current trip ID
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('No active ride found')),
+                          );
+                        }
                       }
                     },
                   ),
@@ -256,8 +319,46 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
+          // Notification indicator
+          Positioned(
+            bottom: 100,
+            right: 16,
+            child: showNotification ? _buildNotificationIcon() : SizedBox(),
+          ),
         ],
       ),
+    );
+  }
+// Method to build the notification icon
+  Widget _buildNotificationIcon() {
+    return Row(
+      children: [
+        Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              '!',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          'Active Ride',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

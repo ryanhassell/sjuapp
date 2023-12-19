@@ -66,26 +66,29 @@ class DriverPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildMainButton(
-              label: 'Current Ride Requests',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PickupRidePage()),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            _buildMainButton(
-              label: 'Allow Location Access',
-              onPressed: () {
-                _enableLocationAccess(context);
-              },
-            ),
-          ],
+        child: Align(
+          alignment: Alignment.topCenter,  // This ensures top center alignment
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildMainButton(
+                label: 'Current Ride Requests',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PickupRidePage()),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              _buildMainButton(
+                label: 'Allow Location Access',
+                onPressed: () {
+                  _enableLocationAccess(context);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
