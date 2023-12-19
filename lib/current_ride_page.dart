@@ -7,6 +7,34 @@ import 'package:sjuapp/trip_history.dart';
 import 'dart:convert';
 
 import 'global_vars.dart';
+class Driver {
+  final int id;
+  final int user_id;
+  final bool available;
+  final int current_trip;
+  final double current_location_latitude;
+  final double current_location_longitude;
+
+  Driver({
+    required this.id,
+    required this.user_id,
+    required this.available,
+    required this.current_trip,
+    required this.current_location_latitude,
+    required this.current_location_longitude,
+  });
+
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    return Driver(
+      id: json['id'],
+      user_id: json['user_id'],
+      available: json['available'],
+      current_trip: json['current_trip'],
+      current_location_latitude: json['current_location_latitude'],
+      current_location_longitude: json['current_location_latitude'],
+    );
+  }
+}
 
 class CurrentRidePage extends StatefulWidget {
   final int tripId;
@@ -22,7 +50,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   Trip? currentTrip;
   bool isCancelling = false;
 
-  static const Duration locationUpdateInterval = Duration(seconds: 30);
+  static const Duration locationUpdateInterval = Duration(seconds: 2);
   late Timer locationUpdateTimer;
 
   @override
@@ -35,14 +63,19 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   }
 
   Future<void> sendLocationToServer(double latitude, double longitude, int userId) async {
-    final url = Uri.parse('http://' + ip + '/users/$userId');
-    final response = await http.put(
-      url,
-      body: {
-        'latitude': latitude.toString(),
-        'longitude': longitude.toString(),
-      },
-    );
+    final url = Uri.parse('http://$ip/drivers/location/$userId/$latitude/$longitude');
+    final response = await http.put(url);
+
+    if (response.statusCode == 200) {
+      print('Location updated successfully');
+    } else {
+      print('Failed to update location. Status code: ${response.statusCode}');
+      // Handle the error as needed
+    }
+  }
+  Future<void> getDriverLocationFromServer(double latitude, double longitude, int userId) async {
+    final url = Uri.parse('http://$ip/drivers/location/$userId');
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       print('Location updated successfully');
