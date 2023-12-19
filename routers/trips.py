@@ -187,10 +187,10 @@ async def list_trip_by_driver(
     return trips
 
 
-@router.get("/no-drivers", response_model=List[TripResponse])
+@router.get("/list/no-driver", response_model=List[TripResponse])
 async def list_trips_with_no_driver(db: Session = Depends(get_db)):
-    # Use SQLAlchemy query to fetch trips with a certain passenger
-    trips = db.query(Trip).filter(Trip.trip_status == "no_driver")
+    # Use SQLAlchemy query to fetch trips with status "no_driver"
+    trips = (db.query(Trip).filter(Trip.trip_status == "no_driver").all())
     return trips
 
 
