@@ -165,7 +165,7 @@ async def list_trips_by_passenger_id(
 
 @router.get("/from-driver-id/{user_id}", response_model=TripResponse)
 async def get_trip_from_driver_id(
-        user_id: int, db: Session = Depends(get_db)
+        driver_id: int, db: Session = Depends(get_db)
 ):
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = (
