@@ -34,7 +34,7 @@ class _PickupRidePageState extends State<PickupRidePage> {
   }
 
   Future<List<Trip>> fetchAvailableTrips() async {
-    final url = Uri.parse('http://$ip/trips/available');
+    final url = Uri.parse('http://$ip/trips/list/no-driver');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
