@@ -102,6 +102,7 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
             driver.current_location_longitude,
           );
           print("Got Driver Location");
+          sendLocationToServer(driver.current_location_latitude, driver.current_location_longitude, driverId);
           _updateMapPosition(driver.current_location_latitude, driver.current_location_longitude);
         });
       } else {
