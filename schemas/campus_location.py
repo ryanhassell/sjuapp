@@ -18,6 +18,7 @@ class CampusLocationResponse(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        orm_mode = True
 
 
 class CampusLocationCreate(BaseModel):
@@ -26,9 +27,19 @@ class CampusLocationCreate(BaseModel):
     latitude: float
     campus: CampusEnum
 
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
+        orm_mode = True
+
 
 class CampusLocationUpdate(BaseModel):
     name: str
     longitude: float
     latitude: float
     campus: CampusEnum
+
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
+        orm_mode = True

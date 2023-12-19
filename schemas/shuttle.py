@@ -20,6 +20,7 @@ class ShuttleResponse(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        orm_mode = True
 
 
 class ShuttleCreate(BaseModel):
@@ -31,6 +32,11 @@ class ShuttleCreate(BaseModel):
     shuttle_type: str
     shuttle_status: str
 
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
+        orm_mode = True
+
 
 class ShuttleUpdate(BaseModel):
     shuttle_direction: ShuttleDirectionEnum
@@ -40,3 +46,8 @@ class ShuttleUpdate(BaseModel):
     current_location_longitude: float
     shuttle_type: str
     shuttle_status: str
+
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
+        orm_mode = True

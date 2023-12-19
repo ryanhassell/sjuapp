@@ -6,7 +6,7 @@ from starlette import status
 
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Base, User, Trip, Driver
-from schemas.driver import DriverResponse
+from schemas.driver import DriverResponse, LatitudeLongitudeRequestBody
 from schemas.user import UserResponse, UserCreate, UserUpdate
 from schemas.user import UserCreate
 
@@ -155,7 +155,7 @@ async def discover_available_drivers(db: Session = Depends(get_db)):
     return driver
 
 
-@router.put("/{driver_id}/location", response_model=DriverResponse)
+@router.put("/location/{driver_id}/{latitude}/{longitude}", response_model=DriverResponse)
 async def update_driver_location(
         driver_id: int, latitude: float, longitude: float, db: Session = Depends(get_db)
 ):
@@ -172,3 +172,17 @@ async def update_driver_location(
         raise HTTPException(
             status_code=404, detail=f"Driver with ID {driver_id} not found"
         )
+
+
+@router.get("/location/{driver_id}", response_model=DriverResponse)
+async def get_driver_location(
+        driver_id: int, db: Session = Depends(get_db)
+):
+    driver = db.query(Driver).filter(Driver.id == driver_id).first()
+    if driver:
+        return driver
+    else:
+        raise HTTPException(
+            status_code=404, detail=f"Driver with ID {driver_id} not found"
+        )
+
