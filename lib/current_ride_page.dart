@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 import 'package:sjuapp/trip_history.dart';
 import 'dart:convert';
 
@@ -20,10 +22,60 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
   Trip? currentTrip;
   bool isCancelling = false;
 
+  static const Duration locationUpdateInterval = Duration(seconds: 30);
+  late Timer locationUpdateTimer;
+
   @override
   void initState() {
     super.initState();
     _fetchCurrentTrip();
+
+    // Start location updates when the page is initialized
+    startLocationUpdates();
+  }
+
+  Future<void> sendLocationToServer(double latitude, double longitude, int userId) async {
+    final url = Uri.parse('http://' + ip + '/users/$userId');
+    final response = await http.put(
+      url,
+      body: {
+        'latitude': latitude.toString(),
+        'longitude': longitude.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Location updated successfully');
+    } else {
+      print('Failed to update location. Status code: ${response.statusCode}');
+      // Handle the error as needed
+    }
+  }
+
+  // Function to start location updates
+  void startLocationUpdates() {
+    locationUpdateTimer = Timer.periodic(locationUpdateInterval, (timer) {
+      updateDriverLocation(); // Call the function to update driver location
+    });
+  }
+
+  // Function to update driver location
+  Future<void> updateDriverLocation() async {
+    Location location = Location();
+
+    final int driverId = current_user_id;
+
+    try {
+      LocationData currentLocation = await location.getLocation();
+      double latitude = currentLocation.latitude!;
+      double longitude = currentLocation.longitude!;
+
+      // Send a request to FastAPI server with latitude and longitude
+      await sendLocationToServer(latitude, longitude, driverId);
+    } catch (e) {
+      print("Error getting location: $e");
+      // Handle errors, such as location services being disabled or permission denied
+    }
   }
 
   Future<Trip?> fetchCurrentTrip(int tripId) async {
