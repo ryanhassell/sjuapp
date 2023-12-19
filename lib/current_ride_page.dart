@@ -26,12 +26,12 @@ class Driver {
 
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
-      id: json['id'],
-      user_id: json['user_id'],
-      available: json['available'],
-      current_trip: json['current_trip'],
-      current_location_latitude: json['current_location_latitude'],
-      current_location_longitude: json['current_location_latitude'],
+      id: json['id'] ?? 0, // Use default value or handle accordingly
+      user_id: json['user_id'] ?? 0, // Use default value or handle accordingly
+      available: json['available'] ?? false, // Use default value or handle accordingly
+      current_trip: json['current_trip'] ?? 0, // Use default value or handle accordingly
+      current_location_latitude: json['current_location_latitude'] ?? 0.0, // Use default value or handle accordingly
+      current_location_longitude: json['current_location_longitude'] ?? 0.0, // Use default value or handle accordingly
     );
   }
 }
@@ -52,14 +52,19 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
 
   static const Duration locationUpdateInterval = Duration(seconds: 2);
   late Timer locationUpdateTimer;
+  LatLng driverLocation = LatLng(0,0); // Initial driver location
 
   @override
   void initState() {
     super.initState();
     _fetchCurrentTrip();
-
-    // Start location updates when the page is initialized
     startLocationUpdates();
+  }
+
+  @override
+  void dispose() {
+    locationUpdateTimer.cancel();
+    super.dispose();
   }
 
   Future<void> sendLocationToServer(double latitude, double longitude, int userId) async {
@@ -73,24 +78,42 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
       // Handle the error as needed
     }
   }
-  Future<void> getDriverLocationFromServer(double latitude, double longitude, int userId) async {
-    final url = Uri.parse('http://$ip/drivers/location/$userId');
-    final response = await http.get(url);
+  void startLocationUpdates() {
+    locationUpdateTimer = Timer.periodic(locationUpdateInterval, (timer) {
+      getDriverLocation(); // Call the function to get driver's location periodically
+    });
+  }
 
-    if (response.statusCode == 200) {
-      print('Location updated successfully');
-    } else {
-      print('Failed to update location. Status code: ${response.statusCode}');
-      // Handle the error as needed
+  Future<void> getDriverLocation() async {
+    final int driverId = current_user_id;
+
+    try {
+      final url = Uri.parse('http://$ip/drivers/location/$driverId');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final Driver driver = Driver.fromJson(responseData);
+
+        // Update the driver's location on the map
+        setState(() {
+          driverLocation = LatLng(
+            driver.current_location_latitude,
+            driver.current_location_longitude,
+          );
+          print("Got Driver Location");
+          _updateMapPosition(driver.current_location_latitude, driver.current_location_longitude);
+        });
+      } else {
+        print('Failed to get driver location. Status code: ${response.statusCode}');
+        // Handle the error as needed
+      }
+    } catch (e) {
+      print('Error getting driver location: $e');
+      // Handle errors
     }
   }
 
-  // Function to start location updates
-  void startLocationUpdates() {
-    locationUpdateTimer = Timer.periodic(locationUpdateInterval, (timer) {
-      updateDriverLocation(); // Call the function to update driver location
-    });
-  }
 
   // Function to update driver location
   Future<void> updateDriverLocation() async {
@@ -208,26 +231,18 @@ class _CurrentRidePageState extends State<CurrentRidePage> {
               child: GoogleMap(
                 onMapCreated: (controller) {
                   mapController = controller;
-                  _updateMapPosition(
-                      currentTrip!.startLocationLatitude,
-                      currentTrip!.startLocationLongitude
-                  );
+                  // Set initial driver's location on the map
+                  _updateMapPosition(driverLocation.latitude, driverLocation.longitude);
                 },
                 initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                      currentTrip!.startLocationLatitude,
-                      currentTrip!.startLocationLongitude
-                  ),
+                  target: driverLocation, // Use driver's location
                   zoom: 12.0,
                 ),
                 markers: {
                   Marker(
-                    markerId: const MarkerId("pickup"),
-                    position: LatLng(
-                        currentTrip!.startLocationLatitude,
-                        currentTrip!.startLocationLongitude
-                    ),
-                    infoWindow: const InfoWindow(title: "Pickup Location"),
+                    markerId: const MarkerId("driver"),
+                    position: driverLocation, // Use driver's location
+                    infoWindow: const InfoWindow(title: "Driver Location"),
                   ),
                   Marker(
                     markerId: const MarkerId("dropoff"),
