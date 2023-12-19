@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.global_vars import DB_HOST, DB_NAME, DB_PASS, DB_USER
 from app.models import Trip, Base, Driver
+from routers.drivers import change_driver_availability
 from schemas.trip import (
     TripResponse,
     TripCreate,
@@ -47,7 +48,7 @@ async def list_trips(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
 
 @router.get("/by-user/{user_id}", response_model=list[TripResponse])
 async def list_trips_by_passenger_id(
-    user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+        user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
 ):
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = (
@@ -76,12 +77,11 @@ async def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
 
     # Find an available driver
     assigned_driver = db.query(Driver).filter(Driver.available == True).first()
-    # The above line can also be written as:
-    # assigned_driver = db.query(Driver).filter(Driver.available.is_(True)).first()
 
     if assigned_driver:
         new_trip.driver = assigned_driver.id
         assigned_driver.available = False
+        assigned_driver.current_trip = new_trip.id
         db.add(assigned_driver)
         new_trip.trip_status = "current"
         db.add(new_trip)
@@ -112,7 +112,7 @@ async def delete_trip(trip_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{trip_id}", response_model=TripResponse)
 async def update_trip(
-    trip_id: int, trip_data: TripUpdate, db: Session = Depends(get_db)
+        trip_id: int, trip_data: TripUpdate, db: Session = Depends(get_db)
 ):
     # Retrieve the Trip object by its ID
     trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
@@ -131,7 +131,7 @@ async def update_trip(
 
 @router.put("/{trip_id}/status", response_model=TripStatusResponse)
 async def update_trip_status(
-    trip_id: int, trip_data: TripStatusResponse, db: Session = Depends(get_db)
+        trip_id: int, trip_data: TripStatusResponse, db: Session = Depends(get_db)
 ):
     # Retrieve the Trip object by its ID
     trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
@@ -150,7 +150,7 @@ async def update_trip_status(
 
 @router.get("/current-trips/{user_id}", response_model=TripResponse)
 async def list_trips_by_passenger_id(
-    user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+        user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
 ):
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = (
@@ -165,7 +165,7 @@ async def list_trips_by_passenger_id(
 
 @router.get("/current-trips-by-driver/{user_id}", response_model=TripResponse)
 async def list_trips_by_driver(
-    user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+        user_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
 ):
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = (
@@ -183,3 +183,16 @@ async def list_trips_with_no_driver(db: Session = Depends(get_db)):
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = db.query(Trip).filter(Trip.trip_status == "no_driver")
     return trips
+
+
+@router.put("/complete/{trip_id}", response_model=TripResponse)
+async def complete_trip(
+        trip_id: int, db: Session = Depends(get_db)
+):
+    # Retrieve the Trip object by its ID
+    trip_to_update = db.query(Trip).filter(Trip.id == trip_id).first()
+    trip_to_update.trip_status = "completed"
+    await change_driver_availability(user_id=trip_to_update.driver, availability=True, db=db)
+    db.commit()
+    db.refresh(trip_to_update)
+    return trip_to_update
