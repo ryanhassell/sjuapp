@@ -170,7 +170,7 @@ async def get_trip_from_driver_id(
     # Use SQLAlchemy query to fetch trips with a certain passenger
     trips = (
         db.query(Trip)
-        .filter(Trip.driver == user_id, Trip.trip_status == "current")
+        .filter(Trip.driver == driver_id, Trip.trip_status == "current")
         .first()
     )
     return trips
