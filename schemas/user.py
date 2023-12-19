@@ -22,6 +22,7 @@ class UserResponse(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        orm_mode = True
 
 
 class UserCreate(BaseModel):
@@ -35,6 +36,10 @@ class UserCreate(BaseModel):
     password: str
     authenticated: bool
 
+    class Config:
+        arbitrary_types_allowed = True
+        orm_mode = True
+
 
 class UserUpdate(BaseModel):
     first_name: str
@@ -46,3 +51,7 @@ class UserUpdate(BaseModel):
     sju_id: str
     password: str
     authenticated: bool
+
+    class Config:
+        arbitrary_types_allowed = True
+        orm_mode = True

@@ -13,6 +13,10 @@ class VehicleResponse(BaseModel):
     seatsAvailable: int
     licensePlate: int
 
+    class Config:
+        arbitrary_types_allowed = True
+        orm_mode = True
+
 
 class VehicleCreate(BaseModel):
     make: str
@@ -22,6 +26,10 @@ class VehicleCreate(BaseModel):
     seatsAvailable: int
     licensePlate: int
 
+    class Config:
+        arbitrary_types_allowed = True
+        orm_mode = True
+
 
 class VehicleUpdate(BaseModel):
     make: str
@@ -30,3 +38,7 @@ class VehicleUpdate(BaseModel):
     color: str
     seatsAvailable: int
     licensePlate: int
+
+    class Config:
+        arbitrary_types_allowed = True
+        orm_mode = True
