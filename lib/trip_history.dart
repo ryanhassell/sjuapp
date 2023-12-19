@@ -361,8 +361,11 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
-                        return Text(
-                            'Error fetching driver info: ${snapshot.error}');
+                        return const Text(
+                            'No Driver Assigned', style:
+                        TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold));
                       } else {
                         final driverInfo = snapshot.data as User;
                         return Container(
